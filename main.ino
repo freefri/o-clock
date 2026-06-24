@@ -50,6 +50,14 @@ int lastButtonState [3] = {LOW, LOW, LOW};
 unsigned long lastDebounceTime[3] = {0L, 0L, 0L};
 unsigned long debounceDelay = 5L;  // ms of debounce
 
+//**** variables to replace rtc ds3231 with milis() *****/
+bool rtcAvailable = true;   // set false if RTC not used
+
+byte clock_hh = 12;
+byte clock_mm = 0;
+byte clock_ss = 0;
+
+unsigned long lastMillis = 0;
 
 //**********SETUP PROGRAM***************//
 void setup() {
@@ -68,14 +76,23 @@ void setup() {
   display.setBrightness(brightness);  //sets brightness using variable set earlier
 
   rtc.setClockMode(false);
+
+  byte DS3231Address = 0x68;
+  Wire.beginTransmission(DS3231Address);
+  byte error = Wire.endTransmission();
+
+  if (error != 0) {
+    rtcAvailable = false;
+  }
 }
+
+/*** color blinking */
+unsigned long lastBlink = 0;
+bool colonOn = true;
 
 //**********LOOP PROGRAM***************//
 void loop() {
-
-  hh = rtc.getHour(h12, pm);
-  mm = rtc.getMinute();
-  ss = rtc.getSecond();
+  updateClock();
 
   // update display
   if ((mode == 4) or (mode == 5)) { //  4 = mode set buzz period, 5 = select buzz
