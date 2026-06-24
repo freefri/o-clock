@@ -21,9 +21,9 @@ const byte Buzz2 = 8; // loud buzz
 //**********C0NSTANTS***************//
 
 const uint32_t Color_hhmm = display.Color(255 , 255, 255);  // hours and minutes color - white
-const uint32_t Color_ss = display.Color(255, 60, 0) ;    // seconds color - Orange
-const uint32_t Color_ss55 = display.Color(255, 0, 0);  // last seconds color - Red
-const uint32_t Color_ss00 = display.Color(10, 255, 10); // Seconds 00 color - Green
+const uint32_t Color_orange = display.Color(255, 60, 0) ;    // seconds color - Orange
+const uint32_t Color_red = display.Color(255, 0, 0);  // last seconds color - Red
+const uint32_t Color_green = display.Color(10, 255, 10); // Seconds 00 color - Green
 const unsigned int shortbuzz = 200u; // short sound duration
 const unsigned int longbuzz = 800u; // long sound duration
 
@@ -326,127 +326,91 @@ void loop() {
 //****************OTHER SUBRUTINES********************//
 
 void Chars2Display(byte d1, byte d2, byte d3, byte d4, byte d5, byte d6, byte mode, byte cs) {
-  // draw the 6 digits in the display.
-  // mode is used to choose the mode of represent: 0 = time with seconds colored; 1,2,3 = setting h, m, s (underlined); 4 = buzzer period underlined; 5 = buzzer selected underlined
-  // cs is color of seconds: 0=normal 1=last_seconds 2=start_second
-  byte digit;
-  int cursor;
 
-  for (int h = 1; h <= 6; h++) {
-    switch (h) {
-      case 1:  //hour decene
-        digit = d1;
-        cursor = 224;
-        if ((mode == 1) or (mode == 5)) {
-          digit = digit + 10; //underline in case of changing time mode or buzzer select mode
-        }
-        Digit2Display(digit, cursor, Color_hhmm);
-        break;
-      case 2:  //hour unit
-        digit = d2;
-        cursor = 184;
-        if (mode == 1) {
-          digit = digit + 10; //underline in case of changing time mode
-        }
-        Digit2Display(digit, cursor, Color_hhmm);
-        break;
-      case 3:  //minute decene
-        digit = d3;
-        cursor = 128;
-        if (mode == 2) {
-          digit = digit + 10; //underline in case of changing time mode
-        }
-        Digit2Display(digit, cursor, Color_hhmm);
-        break;
-      case 4:  //minute unit
-        digit = d4;
-        cursor = 88;
-        if ((mode == 2) or ((mode == 4) and (digit < 255))) {
-          digit = digit + 10; //underline in case of changing time mode or buzzer period mode
-        }
-        Digit2Display(digit, cursor, Color_hhmm);
-        break;
-      case 5:  //second decene
-        digit = d5;
-        cursor = 40;
-        if ((mode == 3) or (mode == 4)) {
-          digit = digit + 10; //underline in case of changing time mode or buzzer period mode
-        }
-        if (cs == 1 && mode < 4) {
-          Digit2Display(digit, cursor, Color_ss55);
-        } else if (cs == 2 && mode < 4) {
-          Digit2Display(digit, cursor, Color_ss00);
-        } else if (mode < 4) {
-          Digit2Display(digit, cursor, Color_ss);
-        } else {
-          Digit2Display(digit, cursor, Color_hhmm);
-        }
-        break;
-      case 6:  //second unit
-        digit = d6;
-        cursor = 0;
-        if ((mode == 3) or (mode == 4)) {
-          digit = digit + 10; //underline in case of changing time mode or buzzer period mode
-        }
-        if (cs == 1  && mode < 4) {
-          Digit2Display(digit, cursor, Color_ss55);
-        } else if (cs == 2 && mode < 4) {
-          Digit2Display(digit, cursor, Color_ss00);
-        } else if (mode < 4) {
-          Digit2Display(digit, cursor, Color_ss);
-        } else {
-          Digit2Display(digit, cursor, Color_hhmm);
-        }
-        break;
-    }
-    // separators between hour and minutes
-    if ((ss % 2 == 0) && (mode < 4)) {
-      display.setPixelColor(173, Color_hhmm);
-      display.setPixelColor(170, Color_hhmm);
-    } else if ((ss % 2 == 1) || (mode > 3)) {
-      display.setPixelColor(173, display.Color(0, 0, 0));
-      display.setPixelColor(170, display.Color(0, 0, 0));
-    }
-  }
+  display.clear();
+
+  // column positions for digits
+  int xPos[6] = {0, 4, 10, 14, 20, 24};
+  int yPos = 0;
+
+  Digit2Display(d1, xPos[0], yPos, Color_hhmm);
+  Digit2Display(d2, xPos[1], yPos, Color_hhmm);
+
+  Digit2Display(d3, xPos[2], yPos, Color_hhmm);
+  Digit2Display(d4, xPos[3], yPos, Color_hhmm);
+
+  Digit2Display(d5, xPos[4], yPos, Color_hhmm);
+  Digit2Display(d6, xPos[5], yPos, Color_hhmm);
 
   display.show();
 }
 
+int asciiToIndex(byte chr) {
 
-void Digit2Display(byte chr, int cursor, uint32_t color) {
+  // numeric digits
+  if (chr <= 9) {
+    return chr;
+  }
+  // digits
+  if (chr >= '0' && chr <= '9') {
+    return chr - '0';
+  }
 
-  //Serial.print("debug= ");    Serial.println(chr);
-  // Shows a digit ("chr" row of DIGIT) of "color" beggining in the led "cursor" of the display
-  int k;
+  // uppercase
+  if (chr >= 'A' && chr <= 'Z') {
+    return 10 + (chr - 'A');
+  }
+  // lowercase
+  if (chr >= 'a' && chr <= 'z') {
+    return 10 + (chr - 'a');
+  }
 
-  if (chr == 255) {   // 255: character " "
-    for ( k = 1; k <= 32; k++) {
-      display.setPixelColor(cursor, display.Color(0, 0, 0));
-      cursor++;
-    }
-  } else {
-    if (cursor % 16 == 0) {  // shows a digit in a even column
-      for ( k = 1; k <= 32; k++) {
-        if (DIGIT[chr][32 - k] == 1) {
-          display.setPixelColor(cursor, color);
-        } else if (DIGIT[chr][32 - k] == 0) {
-          display.setPixelColor(cursor, display.Color(0, 0, 0));
-        }
-        cursor++;
-      }
-    } else if (cursor % 16 == 8) {  // shows a digit in a odd column
-      //Serial.print("cursor= ");    Serial.println(cursor);
-      for (int l = 0; l <= 3; l++) {
-        //Serial.print("l= ");    Serial.println(l);
-        for (int k = 8; k >= 1; k--) {
-          if (DIGIT[chr][32 - 8 * l - k] == 1) {
-            display.setPixelColor(cursor, color);
-          } else if (DIGIT[chr][32 - 8 * l - k] == 0) {
-            display.setPixelColor(cursor, display.Color(0, 0, 0));
-          }
-          cursor++;
-        }
+  // fallback
+  return 255;
+}
+
+int Digit2Display(byte chr, int xOffset, int yOffset, uint32_t color) {
+
+  int glyph = asciiToIndex(chr);
+
+  if (glyph == 255) return;
+
+  const int DIGIT_W = 4;
+  const int DIGIT_H = 8;
+
+  for (int i = 0; i < 32; i++) {
+
+    uint8_t glyphValue = pgm_read_byte(&(GLYPH[glyph][i]));
+    if (glyphValue == 1) {
+
+      int x = xOffset + (i % DIGIT_W);
+      int y = yOffset + (i / DIGIT_W);
+
+      if (x >= 0 && x < WIDTH && y >= 0 && y < HEIGHT) {
+
+        int ledIndex = mapXYtoSnakeStrip(x, y);
+        display.setPixelColor(ledIndex, color);
+
       }
     }
   }
+  return 4; // return width plus separator
+}
+int DisplayText(const char* text, int xOffset, int yOffset, uint32_t color) {
+
+  int x = xOffset;
+
+  while (*text) {
+
+    if (*text == ':') {
+      x += Colon(x - 1, yOffset, color);
+    } else {
+      x += Digit2Display(*text, x, yOffset, color);
+      x += 1;   // one column of spacing
+    }
+
+    text++;
+  }
+
+  return x - xOffset - 1;
 }
