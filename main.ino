@@ -65,6 +65,8 @@ unsigned long lastMillis = 0;
 
 //**********SETUP PROGRAM***************//
 void setup() {
+  Serial.begin(9600); // only needed for development
+  Serial.println("hello -> starting");
   // Buttons input setting
   pinMode (Pset, INPUT); digitalWrite(Pset, HIGH);
   pinMode (Pinc, INPUT); digitalWrite(Pinc, HIGH);
@@ -94,252 +96,105 @@ void setup() {
 unsigned long lastBlink = 0;
 bool colonOn = true;
 
+const int MODE_BRI = 1;
+const int MODE_CLOCK = 0;
+const int MODE_BIP = 2;
+const int MODE_EDIT = 3;
+const int MODE_LAST = 3;
+
 //**********LOOP PROGRAM***************//
 void loop() {
+  handleModeButton();
+  handleSelectPlusButton();
+
+  switch (mode) {
+    case MODE_BRI:
+      modeBrighness();
+      break;
+
+    case MODE_CLOCK:
+      modeClock();
+      break;
+
+    case MODE_BIP:
+      modeBip();
+      break;
+
+    case MODE_EDIT:
+      modeEdit();
+      break;
+  }
+}
+
+void handleSelectPlusButton() {
+
+  static int lastState = HIGH;
+  int state = digitalRead(Pinc);
+
+  if (state == LOW && lastState == HIGH) {
+
+    if (mode == MODE_BIP) {
+      selectbuzz++;
+      if (selectbuzz > 2) selectbuzz = 0;
+    } else if (mode == MODE_BRI) {
+      brightness += 10;
+      if (brightness > 50) brightness = 10;
+      display.setBrightness(brightness);
+    }
+  }
+
+  lastState = state;
+}
+void handleModeButton() {
+
+  static int lastState = HIGH;
+  int state = digitalRead(Pset);
+
+  if (state == LOW && lastState == HIGH) {
+    mode++;
+    if (mode > MODE_LAST) mode = 0;
+  }
+
+  lastState = state;
+}
+void modeClock() {
   updateClock();
+  colonOn = !colonOn;
+  drawClock(hh, mm, ss);
+  delay(200);
+}
+void modeBrighness() {
+  display.clear();
 
-  // update display
-  if ((mode == 4) or (mode == 5)) { //  4 = mode set buzz period, 5 = select buzz
-    aux1 = perbuzz >= 100 ? perbuzz / 100 : 255;
-    Chars2Display(selectbuzz, 255,  255,  aux1 , (perbuzz % 100) / 10, perbuzz % 10, mode, 0);
-  }
-  if (mode >= 0 && mode <= 3) { // modes 0, 1, 2, 3 (normal or changing hour min or second)
-    if ((hh != hhd) || (mm != mmd) || (ss != ssd) || mode != moded) {
-      if (perbuzz != 0) {
-        secbuzz = (perbuzz - (((mm % 2) * 60 + ss ) % perbuzz)) % perbuzz; //seconds to the end of buzzer period (p-1, p-2 ... 2, 1, 0, p-1...)
-      }
-      if (secbuzz == 0) {
-        Chars2Display(hh / 10, hh % 10, mm / 10, mm % 10, ss / 10, ss % 10, mode, 2); // print time of start second
-      } else if (secbuzz < 6) {
-        Chars2Display(hh / 10, hh % 10, mm / 10, mm % 10, ss / 10, ss % 10, mode, 1); // print time of last seconds to start
-      } else {
-        Chars2Display(hh / 10, hh % 10, mm / 10, mm % 10, ss / 10, ss % 10, mode, 0); // print normal time
-      }
+  int x = DisplayText("BRI:", 0, 0, Color_hhmm);
+  x += Digit2Display(brightness / 10, x, 0, Color_orange);
 
-      hhd = hh;
-      mmd = mm;
-      ssd = ss;
-      moded = mode;
-    }
+  display.show();
+  delay(200);
+}
+void modeBip() {
+  display.clear();
+
+  int x = DisplayText("BIP:", 0, 0, Color_hhmm);
+  if (selectbuzz == 0) {
+    x += DisplayText("NO", x, 0, Color_red);
+  } else {
+    x += Digit2Display(selectbuzz, x, 0, Color_green);
   }
 
+  display.show();
+  delay(200);
+}
+void modeEdit() {
+  display.clear();
 
-  // ********************buzzer actions******************************
-
-  if (secbuzz < 6  && mode < 4) {
-    buzzeroff = (secbuzz == 0) ? longbuzz : shortbuzz;  // in second 0, long buzz; for the rest, short buzz
-    if ( buzzstate == 0 && ssinibuzz != ss ) { //starts buzz
-      buzzstate = 1;
-      millsinibuzz = millis();
-      ssinibuzz = ss;
-      if (selectbuzz == 1) {
-        digitalWrite(Buzz, HIGH);
-      } else if (selectbuzz == 2) {
-        digitalWrite(Buzz2 , HIGH);
-      }
-
-    } else if (millis() >= (millsinibuzz + long(buzzeroff)) && buzzstate == 1) { //end of buzz
-      //Serial.print("butt= ");    Serial.println(millis()-(millsinibuzz + long(buzzeroff)));
-      buzzstate = 0;
-      digitalWrite(Buzz, LOW);
-      digitalWrite(Buzz2, LOW);
-      //buzzeroff = 10000;
-    }
-  } else if (secbuzz >= 5 ||  mode == 4 ) {
-    digitalWrite (Buzz, LOW);
+  int x = DisplayText("EDIT", 0, 0, Color_hhmm);
+  if (selectbuzz == 0) {
+    x += DisplayText("NO", x, 0, Color_red);
+  } else {
+    x += Digit2Display(selectbuzz, x, 0, Color_green);
   }
 
-
-  // ********************Buttons overview******************************
-  //  button "menu"
-  butreading = digitalRead(Pset);
-  //Serial.print("butt= ");    Serial.println(butreading);
-  if (butreading != lastButtonState[0]) { //si cambia estado reinicia temporizador de pulsación
-    lastDebounceTime[0] = millis();
-  }
-  if ((millis() - lastDebounceTime[0]) > debounceDelay) {
-    if (butreading != buttonState[0]) {
-      buttonState[0] = butreading;
-      if (buttonState[0] == LOW) {
-        mode = mode + 1;
-        if (mode > 5) {
-          mode = 0;
-        }
-      }
-    }
-  }
-  lastButtonState[0] = butreading;
-
-  //  button "+"
-  butreading = digitalRead(Pinc);
-  //Serial.print("butt= ");    Serial.println(butreading);
-  if (butreading != lastButtonState[1]) { //si cambia estado reinicia temporizador de pulsación
-    lastDebounceTime[1] = millis();
-  }
-  if ((millis() - lastDebounceTime[1]) > debounceDelay) {
-    if (butreading != buttonState[1]) {
-      buttonState[1] = butreading;
-      if (buttonState[1] == LOW) {
-        switch (mode) {
-          case 0:
-            if (brightness < 100) {
-              brightness = brightness + 10;
-              display.show();
-              display.setBrightness(brightness);
-            }
-            aux1 = brightness / 100;
-            aux2 = (brightness / 10) % 10;
-            Chars2Display(255, 255, aux1, aux2, 255, 255,  mode, 0);
-            delay(10);
-            break;
-          case 1:
-            if (hh == 23) {
-              rtc.setHour(0);
-            }   else {
-              rtc.setHour(hh + 1);
-            }
-            break;
-          case 2:
-            if (mm == 59) {
-              rtc.setMinute(0);
-            }   else {
-              rtc.setMinute(mm + 1);
-            }
-            break;
-          case 3:
-            if (ss == 59) {
-              rtc.setSecond(0);
-            }   else {
-              rtc.setSecond(ss + 1);
-            }
-            break;
-          case 4:
-            switch (perbuzz) {
-              case 0:
-                perbuzz = 30;
-                break;
-              case 30:
-                perbuzz = 60;
-                break;
-              case 60:
-                perbuzz = 120;
-                break;
-              case 120:
-                perbuzz = 0;
-                secbuzz = 255;
-                break;
-            }
-            break;
-          case 5:
-            switch (selectbuzz) {
-              case 0:
-                selectbuzz = 1;
-                digitalWrite(Buzz, HIGH);
-                delay (100);
-                digitalWrite(Buzz, LOW);
-                break;
-              case 1:
-                selectbuzz = 2;
-                digitalWrite(Buzz2, HIGH);
-                delay(100);
-                digitalWrite(Buzz2, LOW);
-                break;
-              case 2:
-                selectbuzz = 0;
-                break;
-            }
-            break;
-        }
-      }
-    }
-  }
-  lastButtonState[1] = butreading;
-
-  //  button "-"
-  butreading = digitalRead(Pdec);
-  //Serial.print("butt= ");    Serial.println(butreading);
-  if (butreading != lastButtonState[2]) { //si cambia estado reinicia temporizador de pulsación
-    lastDebounceTime[2] = millis();
-  }
-  if ((millis() - lastDebounceTime[2]) > debounceDelay) {
-    if (butreading != buttonState[2]) {
-      buttonState[2] = butreading;
-      if (buttonState[2] == LOW) {
-        switch (mode) {
-          case 0:
-            if (brightness > 10) {
-              brightness = brightness - 10;
-              display.show();
-              display.setBrightness(brightness);
-            }
-            aux1 = brightness / 100;
-            aux2 = (brightness / 10) % 10;
-            Chars2Display(255, 255, aux1, aux2, 255, 255,  mode, 0);
-            delay(10);
-            break;
-          case 1:
-            if (hh == 00) {
-              rtc.setHour(23);
-            }   else {
-              rtc.setHour(hh - 1);
-            }
-            break;
-          case 2:
-            if (mm == 00) {
-              rtc.setMinute(59);
-            }   else {
-              rtc.setMinute(mm - 1);
-            }
-            break;
-          case 3:
-            if (ss == 00) {
-              rtc.setSecond(59);
-            }   else {
-              rtc.setSecond(ss - 1);
-            }
-            break;
-          case 4:
-            switch (perbuzz) {
-              case 0:
-                perbuzz = 120;
-                break;
-              case 30:
-                perbuzz = 0;
-                secbuzz = 255;
-                break;
-              case 60:
-                perbuzz = 30;
-                break;
-              case 120:
-                perbuzz = 60;
-                break;
-            }
-            break;
-          case 5:
-            switch (selectbuzz) {
-              case 0:
-                selectbuzz = 2;
-                digitalWrite(Buzz2, HIGH);
-                delay(100);
-                digitalWrite(Buzz2, LOW);
-                break;
-              case 1:
-                selectbuzz = 0;
-                break;
-              case 2:
-                selectbuzz = 1;
-                digitalWrite(Buzz, HIGH);
-                delay (100);
-                digitalWrite(Buzz, LOW);
-                break;
-            }
-            break;
-        }
-      }
-    }
-  }
-  lastButtonState[2] = butreading;
-
-
-  //delay(50);  //Delays 50 milliseconds
+  display.show();
+  delay(200);
 }
