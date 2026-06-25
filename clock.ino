@@ -40,15 +40,5 @@ void updateClock() {
 
   if (millis() - lastPrint >= 1000) {
     lastPrint = millis();
-
-    Serial.print(hh);
-    Serial.print(":");
-
-    if (mm < 10) Serial.print('0');
-    Serial.print(mm);
-    Serial.print(":");
-
-    if (ss < 10) Serial.print('0');
-    Serial.println(ss);
   }
 }

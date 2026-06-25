@@ -6,23 +6,50 @@ void drawClock(int hh, int mm, int ss) {
 
   int x = 0;
 
-  // HH
-  x += Digit2Display(hh / 10, x, 0, Color_hhmm);
-  x += Digit2Display(hh % 10, x, 0, Color_hhmm);
+  uint32_t colorHH;
+  if (submode_editing == EDIT_MODE_HH) {
+    colorHH = Color_blue;
+  } else {
+    colorHH = Color_white;
+  }
+  uint32_t colorMM;
+  if (submode_editing == EDIT_MODE_MM) {
+    colorMM = Color_blue;
+  } else {
+    colorMM = Color_white;
+  }
+  uint32_t colorSS;
+  if (submode_editing == EDIT_MODE_SS) {
+    colorSS = Color_blue;
+  } else {
+    if (ss == 59) {
+      colorSS = Color_red;
+    } else if (ss == 0) {
+      colorSS = Color_green;
+    } else if (ss >= 55) {
+      colorSS = Color_orange;
+    } else {
+      colorSS = Color_white;
+    }
+  }
 
-  x += ColonBlinking(x, 0, Color_hhmm);
+  // HH
+  x += Digit2Display(hh / 10, x, 0, colorHH);
+  x += Digit2Display(hh % 10, x, 0, colorHH);
+
+  x += ColonBlinking(x, 0, Color_white);
 
   // MM
-  x += Digit2Display(mm / 10, x, 0, Color_hhmm);
+  x += Digit2Display(mm / 10, x, 0, colorMM);
   x += 1;
-  x += Digit2Display(mm % 10, x, 0, Color_hhmm);
+  x += Digit2Display(mm % 10, x, 0, colorMM);
 
-  x += ColonBlinking(x, 0, Color_hhmm);
+  x += ColonBlinking(x, 0, Color_white);
 
   // SS
-  x += Digit2Display(ss / 10, x, 0, Color_hhmm);
+  x += Digit2Display(ss / 10, x, 0, colorSS);
   x += 1;
-  x += Digit2Display(ss % 10, x, 0, Color_hhmm);
+  x += Digit2Display(ss % 10, x, 0, colorSS);
 
   display.show();
 }
@@ -87,14 +114,14 @@ void Chars2Display(byte d1, byte d2, byte d3, byte d4, byte d5, byte d6, byte mo
   int xPos[6] = {0, 4, 10, 14, 20, 24};
   int yPos = 0;
 
-  Digit2Display(d1, xPos[0], yPos, Color_hhmm);
-  Digit2Display(d2, xPos[1], yPos, Color_hhmm);
+  Digit2Display(d1, xPos[0], yPos, Color_white);
+  Digit2Display(d2, xPos[1], yPos, Color_white);
 
-  Digit2Display(d3, xPos[2], yPos, Color_hhmm);
-  Digit2Display(d4, xPos[3], yPos, Color_hhmm);
+  Digit2Display(d3, xPos[2], yPos, Color_white);
+  Digit2Display(d4, xPos[3], yPos, Color_white);
 
-  Digit2Display(d5, xPos[4], yPos, Color_hhmm);
-  Digit2Display(d6, xPos[5], yPos, Color_hhmm);
+  Digit2Display(d5, xPos[4], yPos, Color_white);
+  Digit2Display(d6, xPos[5], yPos, Color_white);
 
   display.show();
 }

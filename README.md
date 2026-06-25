@@ -12,6 +12,6 @@ What I do not have so far, but I plan for the future: DS3231 to keep time while 
 - Time can be set manually
 - Adjustable brightness
 - Start intervals of 30s, 60s or 120s
-- Time save althought it is not powered (real time clock with separate battery)
+- Time save, although it is not powered (real time clock with separate battery)
 - Different colors for last and start seconds.
 - 2 different sounds (2 buzzers)
