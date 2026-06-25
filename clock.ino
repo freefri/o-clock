@@ -3,6 +3,8 @@ void updateClock() {
 
   if (rtcAvailable) {
     // ===== USE RTC =====
+    bool h12;  // 12h format
+    bool pm;   // flag pm
     hh = rtc.getHour(h12, pm);
     mm = rtc.getMinute();
     ss = rtc.getSecond();
@@ -35,10 +37,14 @@ void updateClock() {
     ss = clock_ss;
   }
 
-  // todo for debug
-  static unsigned long lastPrint = 0;
+  static byte lastSs = 255;--------------____________++++++
+  if (ss != lastSs) {
+    lastSs = ss;
 
-  if (millis() - lastPrint >= 1000) {
-    lastPrint = millis();
+    if (countDownToBip == 0) {
+      countDownToBip = secondsToBip - 1;
+    } else {
+      countDownToBip--;
+    }
   }
 }

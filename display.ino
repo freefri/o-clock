@@ -22,11 +22,11 @@ void drawClock(int hh, int mm, int ss) {
   if (submode_editing == EDIT_MODE_SS) {
     colorSS = Color_blue;
   } else {
-    if (ss == 59) {
+    if (countDownToBip == 1) {
       colorSS = Color_red;
-    } else if (ss == 0) {
+    } else if (countDownToBip == 0) {
       colorSS = Color_green;
-    } else if (ss >= 55) {
+    } else if (countDownToBip <= 5 && countDownToBip > 1) {
       colorSS = Color_orange;
     } else {
       colorSS = Color_white;

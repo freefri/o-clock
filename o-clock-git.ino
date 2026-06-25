@@ -29,8 +29,6 @@ const unsigned int shortbuzz = 200u; // short sound duration
 const unsigned int longbuzz = 800u; // long sound duration
 
 //*********VARIABLES******************//
-bool h12;                      // 12h format
-bool pm;                       // flag pm
 byte YY, MM, DD, dOW, hh, mm, ss;  // year, month, day, DayOfWeek, hours, minutes, seconds
 byte  hhd, mmd, ssd, moded;       //  hours, minutes, seconds, mode shown currently in display
 byte brightness = 10;             //Maximum brightness of 255
@@ -39,20 +37,20 @@ byte cs;                          // color of seconds: 0=normal 1=last_seconds 2
 
 // Mode menu
 byte mode = 0;
-const int MODE_BRIGHTNESS = 1;
-const int MODE_CLOCK = 0;
-const int MODE_BIP = 2;
-const int MODE_EDIT = 3;
-const int MODE_LAST = 3;
+const byte MODE_BRIGHTNESS = 1;
+const byte MODE_CLOCK = 0;
+const byte MODE_BIP = 2;
+const byte MODE_EDIT = 3;
+const byte MODE_LAST = 3;
 byte submode_editing = 0;
-const int EDIT_MODE_HH = 1;
-const int EDIT_MODE_MM = 2;
-const int EDIT_MODE_SS = 3;
+const byte EDIT_MODE_HH = 1;
+const byte EDIT_MODE_MM = 2;
+const byte EDIT_MODE_SS = 3;
 // END Mode menu
 
-byte perbuzz = 60; // period of buzzer in seconds
+byte secondsToBip = 15; // period of buzzer in seconds
 byte selectbuzz = 1; // 0= no buzzer, 1= normal, 2=loud sound
-byte secbuzz; // seconds remaining to start
+byte countDownToBip = secondsToBip - 1; // seconds remaining to start
 unsigned long  millsinibuzz = millis(); // ms of start of buzz
 unsigned int ssinibuzz = 1; //second in which buzz has started
 unsigned int buzzeroff; //lenght of buzz
@@ -68,7 +66,7 @@ bool rtcAvailable = true;   // set false if RTC not used
 
 byte clock_hh = 12;
 byte clock_mm = 0;
-byte clock_ss = 0;
+byte clock_ss = 50;
 
 unsigned long lastMillis = 0;
 
@@ -103,6 +101,8 @@ void setup() {
   if (error != 0) {
     rtcAvailable = false;
   }
+  updateClock();
+  countDownToBip = 60 - clock_ss;
 }
 
 /*** color blinking */
