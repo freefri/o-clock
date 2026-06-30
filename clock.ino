@@ -1,19 +1,12 @@
 void updateClock() {
 
-  if (mode == MODE_EDIT && submode_editing > 0) {
-    // While editing, display the values being set instead of the live time,
-    // so each button press is visible (and the RTC isn't read mid-edit).
-    hh = clock_hh;
-    mm = clock_mm;
-    ss = clock_ss;
-  } else {
-    // Read the live time from the DS3231 RTC.
-    bool h12;  // 12h format
-    bool pm;   // flag pm
-    hh = rtc.getHour(h12, pm);
-    mm = rtc.getMinute();
-    ss = rtc.getSecond();
-  }
+  // Always read the live time from the DS3231 RTC, even while editing, so the
+  // clock keeps running on the display. Edits are written straight to the RTC.
+  bool h12;  // 12h format
+  bool pm;   // flag pm
+  hh = rtc.getHour(h12, pm);
+  mm = rtc.getMinute();
+  ss = rtc.getSecond();
 
   if (ss != lastSs) {
     lastSs = ss;
@@ -26,21 +19,28 @@ void updateClock() {
   }
 }
 
-void loadEditTimeFromRtc() {
-  // Start editing from the current RTC time, so you adjust "now" not 12:00.
-  if (rtcAvailable) {
-    bool h12, pm;
-    clock_hh = rtc.getHour(h12, pm);
-    clock_mm = rtc.getMinute();
-    clock_ss = rtc.getSecond();
-  }
+// EDIT mode nudges the RTC directly (delta = +1 or -1), so the clock keeps
+// running on the display while you set it.
+void editHour(int delta) {
+  bool h12, pm;
+  int v = (int)rtc.getHour(h12, pm) + delta;
+  if (v > 23) v = 0;
+  if (v < 0) v = 23;
+  rtc.setHour(v);  // 0..23 (24h mode set in setup)
 }
 
-void commitEditTimeToRtc() {
-  // Write the edited time to the RTC when leaving EDIT mode.
-  if (rtcAvailable) {
-    rtc.setHour(clock_hh);    // 0..23 (24h mode set in setup)
-    rtc.setMinute(clock_mm);
-    rtc.setSecond(clock_ss);
-  }
+void editMinute(int delta) {
+  int v = (int)rtc.getMinute() + delta;
+  if (v > 59) v = 0;
+  if (v < 0) v = 59;
+  rtc.setMinute(v);
+}
+
+void editSecond(int delta) {
+  int v = (int)rtc.getSecond() + delta;
+  if (v > 59) v = 0;
+  if (v < 0) v = 59;
+  rtc.setSecond(v);
+  countDownToBip = 60 - v;  // keep the long bip aligned to second 0
+  lastSs = v;
 }

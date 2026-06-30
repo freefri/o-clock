@@ -50,13 +50,6 @@ byte selectbuzz = 1; // 0= no buzzer, 1= normal, 2=loud sound
 byte countDownToBip = secondsToBip - 1; // seconds remaining to start
 bool bipToneOn = false;                 // true while the buzzer is sounding (see bip.ino)
 
-//**** variables to replace rtc ds3231 with milis() *****/
-bool rtcAvailable = true;  // set false if RTC not used
-
-byte clock_hh = 12;
-byte clock_mm = 0;
-byte clock_ss = 50;
-
 byte lastSs = 255;  // last seconds seen by the bip countdown
 
 /*******define matrix dimensions *****/

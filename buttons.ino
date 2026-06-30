@@ -16,28 +16,13 @@ void handleSelectPlusButton() {
     } else if (mode == MODE_EDIT) {
       if (submode_editing == 0) {
         submode_editing = EDIT_MODE_HH;
-        loadEditTimeFromRtc();
       } else if (submode_editing == EDIT_MODE_HH) {
-        clock_hh++;
-        if (clock_hh > 23) {
-          clock_hh = 0;
-        }
+        editHour(+1);
       } else if (submode_editing == EDIT_MODE_MM) {
-        clock_mm++;
-        if (clock_mm > 59) {
-          clock_mm = 0;
-        }
+        editMinute(+1);
       } else if (submode_editing == EDIT_MODE_SS) {
-        clock_ss++;
-        //Serial.println("clock_ss++");
-        if (clock_ss > 59) {
-          clock_ss = 0;
-        }
-        countDownToBip = 60 - clock_ss;
-        lastSs = clock_ss;
+        editSecond(+1);
       }
-      //Serial.print("mode EDIT -> submode -> ");
-      //Serial.println(submode_editing);
     }
   }
 
@@ -61,31 +46,13 @@ void handleSelectMinusButton() {
     } else if (mode == MODE_EDIT) {
       if (submode_editing == 0) {
         submode_editing = EDIT_MODE_HH;
-        loadEditTimeFromRtc();
       } else if (submode_editing == EDIT_MODE_HH) {
-        if (clock_hh == 0) {
-          clock_hh = 23;
-        } else {
-          clock_hh--;
-        }
+        editHour(-1);
       } else if (submode_editing == EDIT_MODE_MM) {
-        if (clock_mm == 0) {
-          clock_mm = 59;
-        } else {
-          clock_mm--;
-        }
+        editMinute(-1);
       } else if (submode_editing == EDIT_MODE_SS) {
-        if (clock_ss == 0) {
-          clock_ss = 59;
-        } else {
-          clock_ss--;
-        }
-        //Serial.println("clock_ss--");
-        countDownToBip = 60 - clock_ss;
-        lastSs = clock_ss;
+        editSecond(-1);
       }
-      //Serial.print("mode EDIT -> submode -> ");
-      //Serial.println(submode_editing);
     }
   }
 
@@ -102,7 +69,6 @@ void handleModeButton() {
       if (submode_editing > EDIT_MODE_SS) {
         submode_editing = 0;
         mode = MODE_CLOCK;
-        commitEditTimeToRtc();
       }
       //Serial.print("submode -> ");
       //Serial.println(submode_editing);
