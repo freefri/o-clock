@@ -11,8 +11,8 @@ Adafruit_NeoPixel display = Adafruit_NeoPixel(256, ledPin, NEO_GRB + NEO_KHZ800)
 
 //************Buttons****************//
 const byte Pset = 4;  //4 new design, 9 old
-const byte Pinc = 3; //3 new design, 10 old
-const byte Pdec = 2; //2 new design, 11 old
+const byte Pinc = 3;  //3 new design, 10 old
+const byte Pdec = 2;  //2 new design, 11 old
 
 //************I/O********************//
 const byte Buzz = 12; //12 new design, 13 old
@@ -20,20 +20,17 @@ const byte Buzz2 = 8; // loud buzz
 
 //**********C0NSTANTS***************//
 
-const uint32_t Color_white = display.Color(255 , 255, 255);  // hours and minutes color - white
-const uint32_t Color_orange = display.Color(255, 60, 0) ;    // seconds color - Orange
-const uint32_t Color_red = display.Color(255, 0, 0);  // last seconds color - Red
-const uint32_t Color_green = display.Color(10, 255, 10); // Seconds 00 color - Green
+const uint32_t Color_white = display.Color(255, 255, 255);  // hours and minutes color - white
+const uint32_t Color_orange = display.Color(255, 60, 0);    // seconds color - Orange
+const uint32_t Color_red = display.Color(255, 0, 0);        // last seconds color - Red
+const uint32_t Color_green = display.Color(10, 255, 10);    // Seconds 00 color - Green
 const uint32_t Color_blue = display.Color(0, 0, 255); // blue
-const unsigned int shortbuzz = 200u; // short sound duration
-const unsigned int longbuzz = 800u; // long sound duration
 
 //*********VARIABLES******************//
 byte YY, MM, DD, dOW, hh, mm, ss;  // year, month, day, DayOfWeek, hours, minutes, seconds
-byte  hhd, mmd, ssd, moded;       //  hours, minutes, seconds, mode shown currently in display
-byte brightness = 10;             //Maximum brightness of 255
+byte brightness = 10;              //Maximum brightness of 255
 byte aux1, aux2;
-byte cs;                          // color of seconds: 0=normal 1=last_seconds 2=start_second
+byte cs;  // color of seconds: 0=normal 1=last_seconds 2=start_second
 
 // Mode menu
 byte mode = 0;
@@ -51,18 +48,9 @@ const byte EDIT_MODE_SS = 3;
 byte secondsToBip = 15; // period of buzzer in seconds
 byte selectbuzz = 1; // 0= no buzzer, 1= normal, 2=loud sound
 byte countDownToBip = secondsToBip - 1; // seconds remaining to start
-unsigned long  millsinibuzz = millis(); // ms of start of buzz
-unsigned int ssinibuzz = 1; //second in which buzz has started
-unsigned int buzzeroff; //lenght of buzz
-bool buzzstate = 0;
-int butreading; // read of current status of a button
-int buttonState [3] ; // current reading status of buttons menu, + and -
-int lastButtonState [3] = {LOW, LOW, LOW};
-unsigned long lastDebounceTime[3] = {0L, 0L, 0L};
-unsigned long debounceDelay = 5L;  // ms of debounce
 
 //**** variables to replace rtc ds3231 with milis() *****/
-bool rtcAvailable = true;   // set false if RTC not used
+bool rtcAvailable = true;  // set false if RTC not used
 
 byte clock_hh = 12;
 byte clock_mm = 0;
@@ -76,14 +64,19 @@ unsigned long lastMillis = 0;
 
 //**********SETUP PROGRAM***************//
 void setup() {
-  Serial.begin(9600); // only needed for development
+  Serial.begin(9600);  // only needed for development
   Serial.println("hello -> setup");
   // Buttons input setting
-  pinMode (Pset, INPUT); digitalWrite(Pset, HIGH);
-  pinMode (Pinc, INPUT); digitalWrite(Pinc, HIGH);
-  pinMode (Pdec, INPUT); digitalWrite(Pdec, HIGH);
-  pinMode (Buzz, OUTPUT); digitalWrite(Buzz, LOW);
-  pinMode (Buzz2, OUTPUT); digitalWrite(Buzz, LOW);
+  pinMode(Pset, INPUT);
+  digitalWrite(Pset, HIGH);
+  pinMode(Pinc, INPUT);
+  digitalWrite(Pinc, HIGH);
+  pinMode(Pdec, INPUT);
+  digitalWrite(Pdec, HIGH);
+  pinMode(Buzz, OUTPUT);
+  digitalWrite(Buzz, LOW);
+  pinMode(Buzz2, OUTPUT);
+  digitalWrite(Buzz, LOW);
 
   // Start the I2C interface
   Wire.begin();
@@ -141,7 +134,33 @@ void modeClock() {
   updateClock();
   colonOn = !colonOn;
   drawClock(hh, mm, ss);
+  bip();
   delay(200);
+}
+int prevBip = 0;
+void bip() {
+  if (prevBip == countDownToBip) {
+    return;
+  }
+  prevBip = countDownToBip;
+  if (selectbuzz == 0) {
+    return;
+  }
+  int tone1 = 400;
+  tone1 = tone1 * selectbuzz;
+  int tone2 = 125;
+  if (countDownToBip == 1) {
+    tone(Buzz, tone1);
+  } else if (countDownToBip == 10) {
+    tone(Buzz, tone1);
+  } else if (countDownToBip == 0) {
+    tone(Buzz, tone1 + tone2);
+    delay(400);
+  } else if (countDownToBip <= 5 && countDownToBip > 1) {
+    tone(Buzz, tone1);
+  }
+  delay(200);
+  noTone(Buzz);
 }
 void modeBrightness() {
   display.clear();

@@ -37,7 +37,7 @@ void updateClock() {
     ss = clock_ss;
   }
 
-  static byte lastSs = 255;--------------____________++++++
+  static byte lastSs = 255;
   if (ss != lastSs) {
     lastSs = ss;
 
