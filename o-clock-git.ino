@@ -109,6 +109,8 @@ void loop() {
   handleSelectPlusButton();
   handleSelectMinusButton();
 
+  updateClock();
+
   switch (mode) {
     case MODE_BRIGHTNESS:
       modeBrightness();
@@ -133,7 +135,6 @@ void loop() {
 }
 
 void modeClock() {
-  updateClock();
   colonOn = !colonOn;
   drawClock(hh, mm, ss);
   bip();
