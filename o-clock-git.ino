@@ -57,8 +57,7 @@ byte clock_hh = 12;
 byte clock_mm = 0;
 byte clock_ss = 50;
 
-unsigned long lastMillis = 0;
-byte lastSs = 255;
+byte lastSs = 255;  // last seconds seen by the bip countdown
 
 /*******define matrix dimensions *****/
 #define WIDTH 32
@@ -87,17 +86,10 @@ void setup() {
   display.show();                     //Initialize all pixels to 'off'
   display.setBrightness(brightness);  //sets brightness using variable set earlier
 
-  rtc.setClockMode(false);
+  rtc.setClockMode(false);  // 24h mode
 
-  byte DS3231Address = 0x68;
-  Wire.beginTransmission(DS3231Address);
-  byte error = Wire.endTransmission();
-
-  if (error != 0) {
-    rtcAvailable = false;
-  }
   updateClock();
-  countDownToBip = 60 - clock_ss;
+  countDownToBip = 60 - ss;  // align the long bip to second 0 of the RTC
 }
 
 /*** color blinking */
