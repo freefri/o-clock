@@ -48,6 +48,7 @@ const byte EDIT_MODE_SS = 3;
 byte secondsToBip = 15; // period of buzzer in seconds
 byte selectbuzz = 1; // 0= no buzzer, 1= normal, 2=loud sound
 byte countDownToBip = secondsToBip - 1; // seconds remaining to start
+bool bipToneOn = false;                 // true while the buzzer is sounding (see bip.ino)
 
 //**** variables to replace rtc ds3231 with milis() *****/
 bool rtcAvailable = true;  // set false if RTC not used
@@ -135,8 +136,10 @@ void loop() {
 }
 
 void modeClock() {
-  colonOn = !colonOn;
-  drawClock(hh, mm, ss);
+  if (!bipToneOn) {
+    colonOn = !colonOn;
+    drawClock(hh, mm, ss);
+  }
   bip();
   delay(200);
 }

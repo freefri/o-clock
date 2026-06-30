@@ -1,5 +1,4 @@
 unsigned long bipToneUntil = 0;  // millis() time at which to silence the buzzer
-bool bipToneOn = false;
 
 void bip() {
   // Silence the current beep once its duration has elapsed. Non-blocking, so
