@@ -16,9 +16,10 @@ void handleSelectPlusButton() {
     } else if (mode == MODE_EDIT) {
       if (submode_editing == 0) {
         submode_editing = EDIT_MODE_HH;
+        loadEditTimeFromRtc();
       } else if (submode_editing == EDIT_MODE_HH) {
         clock_hh++;
-        if (clock_hh > 24) {
+        if (clock_hh > 23) {
           clock_hh = 0;
         }
       } else if (submode_editing == EDIT_MODE_MM) {
@@ -60,9 +61,10 @@ void handleSelectMinusButton() {
     } else if (mode == MODE_EDIT) {
       if (submode_editing == 0) {
         submode_editing = EDIT_MODE_HH;
+        loadEditTimeFromRtc();
       } else if (submode_editing == EDIT_MODE_HH) {
         if (clock_hh == 0) {
-          clock_hh = 24;
+          clock_hh = 23;
         } else {
           clock_hh--;
         }
@@ -100,6 +102,7 @@ void handleModeButton() {
       if (submode_editing > EDIT_MODE_SS) {
         submode_editing = 0;
         mode = MODE_CLOCK;
+        commitEditTimeToRtc();
       }
       //Serial.print("submode -> ");
       //Serial.println(submode_editing);
