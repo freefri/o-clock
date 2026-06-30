@@ -32,6 +32,8 @@ void handleSelectPlusButton() {
         if (clock_ss > 59) {
           clock_ss = 0;
         }
+        countDownToBip = 60 - clock_ss;
+        lastSs = clock_ss;
       }
       //Serial.print("mode EDIT -> submode -> ");
       //Serial.println(submode_editing);
@@ -77,6 +79,8 @@ void handleSelectMinusButton() {
           clock_ss--;
         }
         //Serial.println("clock_ss--");
+        countDownToBip = 60 - clock_ss;
+        lastSs = clock_ss;
       }
       //Serial.print("mode EDIT -> submode -> ");
       //Serial.println(submode_editing);

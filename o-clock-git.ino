@@ -57,6 +57,7 @@ byte clock_mm = 0;
 byte clock_ss = 50;
 
 unsigned long lastMillis = 0;
+byte lastSs = 255;
 
 /*******define matrix dimensions *****/
 #define WIDTH 32
