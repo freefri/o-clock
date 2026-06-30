@@ -15,3 +15,18 @@ What I do not have so far, but I plan for the future: DS3231 to keep time while 
 - Time save, although it is not powered (real time clock with separate battery)
 - Different colors for last and start seconds.
 - 2 different sounds (2 buzzers)
+
+## Build & flash (command line)
+Board: Arduino UNO, FQBN `arduino:avr:uno`, port `/dev/ttyACM0`.
+
+```
+arduino-cli compile --fqbn arduino:avr:uno o-clock-git
+arduino-cli compile --upload -p /dev/ttyACM0 --fqbn arduino:avr:uno o-clock-git
+```
+
+- `arduino-cli` ships inside the Arduino IDE AppImage. To use it when the IDE is
+  closed, mount the AppImage without launching the GUI:
+  `./arduino-ide_*.AppImage --appimage-mount` (prints a `/tmp/.mount_...` path;
+  `arduino-cli` is under `resources/app/lib/backend/resources/`).
+- If upload fails with **"port /dev/ttyACM0 busy"**, close the Serial Monitor / IDE
+  (it holds the port).
