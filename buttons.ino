@@ -43,37 +43,40 @@ void handleSelectPlusButton() {
 void handleSelectMinusButton() {
 
   static int lastState = HIGH;
-  int state = digitalRead(Pinc);
+  int state = digitalRead(Pdec);
 
   if (state == LOW && lastState == HIGH) {
 
-    //Serial.println("UP+ ");
+    //Serial.println("DOWN- ");
     if (mode == MODE_BIP) {
-      selectbuzz++;
-      if (selectbuzz > 2) selectbuzz = 0;
+      if (selectbuzz == 0) selectbuzz = 2;
+      else selectbuzz--;
     } else if (mode == MODE_BRIGHTNESS) {
-      brightness += 10;
-      if (brightness > 50) brightness = 10;
+      brightness -= 10;
+      if (brightness < 10) brightness = 50;
       display.setBrightness(brightness);
     } else if (mode == MODE_EDIT) {
       if (submode_editing == 0) {
         submode_editing = EDIT_MODE_HH;
       } else if (submode_editing == EDIT_MODE_HH) {
-        clock_hh++;
-        if (clock_hh > 24) {
-          clock_hh = 0;
+        if (clock_hh == 0) {
+          clock_hh = 24;
+        } else {
+          clock_hh--;
         }
       } else if (submode_editing == EDIT_MODE_MM) {
-        clock_mm++;
-        if (clock_mm > 59) {
-          clock_mm = 0;
+        if (clock_mm == 0) {
+          clock_mm = 59;
+        } else {
+          clock_mm--;
         }
       } else if (submode_editing == EDIT_MODE_SS) {
-        clock_ss++;
-        //Serial.println("clock_ss++");
-        if (clock_ss > 59) {
-          clock_ss = 0;
+        if (clock_ss == 0) {
+          clock_ss = 59;
+        } else {
+          clock_ss--;
         }
+        //Serial.println("clock_ss--");
       }
       //Serial.print("mode EDIT -> submode -> ");
       //Serial.println(submode_editing);

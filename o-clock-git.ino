@@ -10,9 +10,9 @@ const byte ledPin = 6;                                                          
 Adafruit_NeoPixel display = Adafruit_NeoPixel(256, ledPin, NEO_GRB + NEO_KHZ800);  //sets all the parameters of the display
 
 //************Buttons****************//
-const byte Pset = 4;  //4 new design, 9 old
-const byte Pinc = 3;  //3 new design, 10 old
-const byte Pdec = 2;  //2 new design, 11 old
+const byte Pset = 4;
+const byte Pdec = 3;
+const byte Pinc = 2;
 
 //************I/O********************//
 const byte Buzz = 12; //12 new design, 13 old
@@ -106,6 +106,7 @@ bool colonOn = true;
 void loop() {
   handleModeButton();
   handleSelectPlusButton();
+  handleSelectMinusButton();
 
   switch (mode) {
     case MODE_BRIGHTNESS:
