@@ -12,7 +12,9 @@ void updateClock() {
     // ===== USE INTERNAL CLOCK =====
     unsigned long now = millis();
 
-    if (now - lastMillis >= 1000) {
+    if (now - lastMillis >= 2000) {
+      lastMillis = now;
+    } else if (now - lastMillis >= 1000) {
       lastMillis += 1000;
 
       clock_ss++;
