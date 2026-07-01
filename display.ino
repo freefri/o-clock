@@ -4,7 +4,7 @@ void drawClock(int hh, int mm, int ss) {
 
   const int W = 4; // digit width
 
-  int x = 0;
+  int x = (hh >= 10) ? 0 : 4;
 
   uint32_t colorHH;
   if (submode_editing == EDIT_MODE_HH) {
@@ -33,8 +33,10 @@ void drawClock(int hh, int mm, int ss) {
     }
   }
 
-  // HH
-  x += Digit2Display(hh / 10, x, 0, colorHH);
+  // HH — hide the leading zero for single-digit hours
+  if (hh >= 10) {
+    x += Digit2Display(hh / 10, x, 0, colorHH);
+  }
   x += Digit2Display(hh % 10, x, 0, colorHH);
 
   x += ColonBlinking(x, 0, Color_white);

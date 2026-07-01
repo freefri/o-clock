@@ -14,14 +14,19 @@ RTC DS3231 (LIR2032) to keep time while off, arduino nano 328.
 - Start intervals of 30s, 60s or 120s
 - Time save, although it is not powered (real time clock with separate battery)
 - Different colors for last and start seconds.
-- 2 different sounds (2 buzzers)
+- 2 different sounds (two different frequencies from the same buzzer)
 
 ## Build & flash (command line)
 Board: Arduino UNO, FQBN `arduino:avr:uno`, port `/dev/ttyACM0`.
 
 ```
 arduino-cli compile --fqbn arduino:avr:uno o-clock-git
+# connect to Arduino UNO
 arduino-cli compile --upload -p /dev/ttyACM0 --fqbn arduino:avr:uno o-clock-git
+# connect to ESP32 (ESP32 Dev Module)
+arduino-cli compile --upload -p /dev/ttyUSB0 --fqbn esp32:esp32:esp32 o-clock-git
+# connect to ESP32-C3 0.42" OLED board (ESP32C3 Dev Module, native USB)
+arduino-cli compile --upload -p /dev/ttyACM0 --fqbn esp32:esp32:esp32c3 o-clock-git
 ```
 
 - `arduino-cli` ships inside the Arduino IDE AppImage. To use it when the IDE is
