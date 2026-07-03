@@ -6,17 +6,27 @@
 //*******Objects of libraries**********//
 DS3231 rtc;  //defines the DS3231 as "rtc"
 
-const byte ledPin = 6;                                                             // display control pin
+//************ Pin map (per board) ************//
+#if defined(ESP32)
+  // ESP32-WROOM-32 (38-pin DevKit). Avoid flash pins 6-11 and input-only 34-39.
+  const byte ledPin = 19;  // WS2812 matrix data (recommended to add a 3.3V->5V level shifter)
+  const byte Pset  = 27;   // mode/SET button
+  const byte Pinc  = 26;   // + button
+  const byte Pdec  = 25;   // - button
+  const byte Buzz  = 13;   // buzzer
+  const byte SDA_pin = 23; // DS3231 SDA
+  const byte SCL_pin = 22; // DS3231 SCL
+#else
+  // Arduino Uno
+  const byte ledPin = 6;   // WS2812 matrix data (add a 3.3V->5V
+  const byte Pset  = 4;    // mode button
+  const byte Pinc  = 2;    // + button
+  const byte Pdec  = 3;    // - button
+  const byte Buzz  = 12;   // buzzer
+  // DS3231 I2C is fixed to A4 (SDA) / A5 (SCL)
+#endif
+
 Adafruit_NeoPixel display = Adafruit_NeoPixel(256, ledPin, NEO_GRB + NEO_KHZ800);  //sets all the parameters of the display
-
-//************Buttons****************//
-const byte Pset = 4;
-const byte Pdec = 3;
-const byte Pinc = 2;
-
-//************I/O********************//
-const byte Buzz = 12; //12 new design, 13 old
-const byte Buzz2 = 8; // loud buzz
 
 //**********C0NSTANTS***************//
 
@@ -29,6 +39,7 @@ const uint32_t Color_blue = display.Color(0, 0, 255); // blue
 //*********VARIABLES******************//
 byte YY, MM, DD, dOW, hh, mm, ss;  // year, month, day, DayOfWeek, hours, minutes, seconds
 byte brightness = 10;              //Maximum brightness of 255
+const int MAX_BRIGHTNESS = 20;
 byte aux1, aux2;
 byte cs;  // color of seconds: 0=normal 1=last_seconds 2=start_second
 
@@ -60,20 +71,29 @@ byte lastSs = 255;  // last seconds seen by the bip countdown
 void setup() {
   Serial.begin(9600);  // only needed for development
   Serial.println("hello -> setup");
-  // Buttons input setting
-  pinMode(Pset, INPUT);
-  digitalWrite(Pset, HIGH);
-  pinMode(Pinc, INPUT);
-  digitalWrite(Pinc, HIGH);
-  pinMode(Pdec, INPUT);
-  digitalWrite(Pdec, HIGH);
+  // Buttons: INPUT_PULLUP works on both AVR and ESP32 (the old INPUT + HIGH
+  // trick does not enable the pull-up on ESP32).
+  pinMode(Pset, INPUT_PULLUP);
+  pinMode(Pinc, INPUT_PULLUP);
+  pinMode(Pdec, INPUT_PULLUP);
+#if defined(ESP32)
+  pinMode(33, OUTPUT);
+  digitalWrite(33, LOW);   // P33 acts as a GND rail for the buttons (tiny current only)
+#endif
   pinMode(Buzz, OUTPUT);
-  digitalWrite(Buzz, LOW);
-  pinMode(Buzz2, OUTPUT);
   digitalWrite(Buzz, LOW);
 
   // Start the I2C interface
-  Wire.begin();
+#if defined(ESP32)
+  Wire.begin(SDA_pin, SCL_pin);   // ESP32 can route I2C to any GPIO
+#else
+  Wire.begin();                   // AVR: I2C fixed to A4 (SDA) / A5 (SCL)
+#endif
+
+  // bring-up debug: is the DS3231 answering on the I2C bus?
+  Wire.beginTransmission(0x68);
+  Serial.print("RTC @0x68: ");
+  Serial.println(Wire.endTransmission() == 0 ? "FOUND" : "NOT FOUND - check SDA/SCL/3V3/GND wiring");
 
   display.begin();                    //Starts the Neopixel display
   display.show();                     //Initialize all pixels to 'off'
@@ -96,6 +116,7 @@ void loop() {
   handleSelectMinusButton();
 
   updateClock();
+  debugSerial();  // bring-up: RTC time + button states over USB (remove later)
 
   switch (mode) {
     case MODE_BRIGHTNESS:
@@ -157,4 +178,34 @@ void modeEdit() {
   int x = DisplayText("EDIT", 0, 0, Color_orange);
   display.show();
   delay(200);
+}
+
+// Bring-up debug: once per second, print the RTC time and the 3 button states.
+// Buttons read 1 when released, 0 when pressed (hold one to test the wiring).
+void debugSerial() {
+  static byte lastSs = 255;
+  static int lastBtns = -1;
+  int b0 = digitalRead(Pset), b1 = digitalRead(Pinc), b2 = digitalRead(Pdec);
+  int btns = (b0 << 2) | (b1 << 1) | b2;
+  // Print on each second tick OR whenever a button changes (catches every press).
+  if (ss == lastSs && btns == lastBtns) return;
+  lastSs = ss;
+  lastBtns = btns;
+
+  Serial.print("t=");
+  if (hh < 10) Serial.print('0');
+  Serial.print(hh);
+  Serial.print(':');
+  if (mm < 10) Serial.print('0');
+  Serial.print(mm);
+  Serial.print(':');
+  if (ss < 10) Serial.print('0');
+  Serial.print(ss);
+
+  Serial.print("  btn set/+/- = ");
+  Serial.print(b0);
+  Serial.print('/');
+  Serial.print(b1);
+  Serial.print('/');
+  Serial.println(b2);
 }

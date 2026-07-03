@@ -11,7 +11,7 @@ void handleSelectPlusButton() {
       if (selectbuzz > 2) selectbuzz = 0;
     } else if (mode == MODE_BRIGHTNESS) {
       brightness += 10;
-      if (brightness > 50) brightness = 10;
+      if (brightness > MAX_BRIGHTNESS) brightness = 10;
       display.setBrightness(brightness);
     } else if (mode == MODE_EDIT) {
       if (submode_editing == 0) {
@@ -41,7 +41,7 @@ void handleSelectMinusButton() {
       else selectbuzz--;
     } else if (mode == MODE_BRIGHTNESS) {
       brightness -= 10;
-      if (brightness < 10) brightness = 50;
+      if (brightness < 10) brightness = MAX_BRIGHTNESS;
       display.setBrightness(brightness);
     } else if (mode == MODE_EDIT) {
       if (submode_editing == 0) {
