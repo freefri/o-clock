@@ -156,7 +156,9 @@ int Digit2Display(byte chr, int xOffset, int yOffset, uint32_t color) {
 
   int glyph = asciiToIndex(chr);
 
-  if (glyph == 255) return;
+  if (glyph == 255) {
+    return 0;
+  }
 
   const int DIGIT_W = 4;
   const int DIGIT_H = 8;
