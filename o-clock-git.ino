@@ -144,7 +144,7 @@ void loop() {
   updateClock();
   silenceFinishedBeep();
   persistSettings();
-  debugSerial();  // bring-up: RTC time + button states over USB (remove later)
+  //debugSerial();  // bring-up: RTC time + button states over USB (remove later)
 
   switch (mode) {
     case MODE_BRIGHTNESS:
@@ -222,8 +222,7 @@ void modeEdit() {
   display.show();
 }
 
-// Bring-up debug: once per second, print the RTC time and the 3 button states.
-// Buttons read 1 when released, 0 when pressed (hold one to test the wiring).
+/*
 void debugSerial() {
   static byte lastSs = 255;
   static int lastBtns = -1;
@@ -251,3 +250,4 @@ void debugSerial() {
   Serial.print('/');
   Serial.println(b2);
 }
+*/
