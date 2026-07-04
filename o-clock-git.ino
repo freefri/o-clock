@@ -139,6 +139,7 @@ void loop() {
   handleSelectMinusButton();
 
   updateClock();
+  silenceFinishedBeep();
   persistSettings();
   debugSerial();  // bring-up: RTC time + button states over USB (remove later)
 

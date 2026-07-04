@@ -15,14 +15,15 @@ void bootBip() {
   noTone(PIN_BUZZER);
 }
 
-void bip() {
-  // Silence the current beep once its duration has elapsed. Non-blocking, so
-  // it no longer stalls the loop (the delay()s were what made the beep
-  // intervals uneven). Signed compare tolerates millis() wraparound.
-  if (bipToneOn && (long)(millis() - bipToneUntil) >= 0) {
+void silenceFinishedBeep() {
+  if (bipToneOn && (long)(millis() - bipToneUntil) >= 0) {  // signed compare tolerates millis() wraparound
     noTone(PIN_BUZZER);
     bipToneOn = false;
   }
+}
+
+void bip() {
+  silenceFinishedBeep();
 
   // Only react when the countdown second changes.
   if (prevBip == countDownToBip) {
@@ -37,7 +38,7 @@ void bip() {
   int tone1 = 400 * selectbuzz;
   int tone2 = 125;
   int freq = 0;
-  unsigned long dur = 200;  // short beep
+  unsigned long duration = 200;  // short beep
 
   if (countDownToBip == 1) {
     freq = tone1;
@@ -45,7 +46,7 @@ void bip() {
     freq = tone1;
   } else if (countDownToBip == 0) {
     freq = tone1 + tone2;  // long, higher beep on second 0
-    dur = 600;
+    duration = 600;
   } else if (countDownToBip <= 5 && countDownToBip > 1) {
     freq = tone1;
   }
@@ -53,6 +54,6 @@ void bip() {
   if (freq > 0) {
     tone(PIN_BUZZER, freq);
     bipToneOn = true;
-    bipToneUntil = millis() + dur;
+    bipToneUntil = millis() + duration;
   }
 }
