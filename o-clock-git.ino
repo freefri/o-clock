@@ -119,9 +119,10 @@ void setup() {
   updateClock();
   countDownToBip = 60 - ss;  // align the long bip to second 0 of the RTC
 
+  int displaySplashDuringMs = 5000;
   messageText = MSG_SPLASH;
   messageColor = Color_blue;
-  messageUntil = millis() + 1000;
+  messageUntil = millis() + displaySplashDuringMs;
   bootBip();
 }
 
