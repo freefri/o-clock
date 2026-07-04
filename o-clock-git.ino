@@ -43,7 +43,7 @@ const uint32_t Color_blue = display.Color(0, 0, 255);
 //*********VARIABLES******************//
 byte hh, mm, ss;
 byte brightness = 10;
-const int MAX_BRIGHTNESS = 20;
+const int MAX_BRIGHTNESS = 250;
 bool is24hours = false;
 
 // Mode menu
@@ -177,7 +177,12 @@ void modeBrightness() {
   display.clear();
 
   int x = DisplayText("BRI:", 0, 0, Color_white);
-  x += Digit2Display(brightness / 10, x, 0, Color_orange);
+  int level = brightness / 10;
+  if (level >= 10) {
+    x += Digit2Display(level / 10, x, 0, Color_orange);
+    x += 1;
+  }
+  x += Digit2Display(level % 10, x, 0, Color_orange);
 
   display.show();
   delay(200);

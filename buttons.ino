@@ -17,8 +17,8 @@ void handleSelectPlusButton() {
       selectbuzz++;
       if (selectbuzz > 2) selectbuzz = 0;
     } else if (mode == MODE_BRIGHTNESS) {
-      brightness += 10;
-      if (brightness > MAX_BRIGHTNESS) brightness = 10;
+      int next = brightness + 20;
+      brightness = (next > MAX_BRIGHTNESS) ? 10 : next;
       display.setBrightness(brightness);
     } else if (mode == MODE_EDIT) {
       if (submode_editing == 0) {
@@ -48,8 +48,8 @@ void handleSelectMinusButton() {
       if (selectbuzz == 0) selectbuzz = 2;
       else selectbuzz--;
     } else if (mode == MODE_BRIGHTNESS) {
-      brightness -= 10;
-      if (brightness < 10) brightness = MAX_BRIGHTNESS;
+      int prev = brightness - 20;
+      brightness = (prev < 10) ? MAX_BRIGHTNESS : prev;
       display.setBrightness(brightness);
     } else if (mode == MODE_EDIT) {
       if (submode_editing == 0) {
