@@ -3,6 +3,7 @@ void showVersionMessage(const char* sign) {
   strcat(messageBuf, MSG_VERSION);
   messageText = messageBuf;
   messageColor = Color_orange;
+  messageScroll = false;
   messageStart = millis();
   messageUntil = messageStart + 1000;
 }
@@ -34,8 +35,9 @@ void handleSelectPlusButton() {
     } else if (mode == MODE_CLOCK) {
       messageText = MSG_SPLASH;
       messageColor = Color_blue;
+      messageScroll = true;
       messageStart = millis();
-      messageUntil = messageStart + displaySplashDuringMs;
+      messageUntil = messageStart + DISPLAY_SPLASH_DURING_MS;
     }
   }
 

@@ -4,7 +4,8 @@
 #include "glyphs.h"
 
 //******* Messages **********//
-const char MSG_SPLASH[]  = "RAZA   PALLEIRA     NIGRAN";
+const char MSG_SPLASH[]  = "RAZA    PALLEIRA        ";
+const int DISPLAY_SPLASH_DURING_MS = 4000;
 const char MSG_VERSION[] = "V 0.1";
 
 //*******Objects of libraries**********//
@@ -38,7 +39,7 @@ const uint32_t Color_white = display.Color(255, 255, 255);
 const uint32_t Color_orange = display.Color(255, 60, 0);
 const uint32_t Color_red = display.Color(255, 0, 0);
 const uint32_t Color_green = display.Color(10, 255, 10);
-const uint32_t Color_blue = display.Color(0, 0, 255);
+const uint32_t Color_blue = display.Color(0, 160, 255);
 
 //*********VARIABLES******************//
 byte hh, mm, ss;
@@ -69,9 +70,9 @@ byte lastSs = 255;  // last seconds seen by the bip countdown
 char messageBuf[16];
 const char* messageText = "";    // brief text shown instead of the clock
 uint32_t messageColor = Color_blue;
+bool messageScroll = false;      // scroll the message instead of showing it static
 unsigned long messageStart = 0;  // when the message began (drives the scroll)
 unsigned long messageUntil = 0;  // ...until this millis() time
-const int DISPLAY_SPLASH_DURING_MS = 5000;
 
 /*******define matrix dimensions *****/
 #define WIDTH 32
@@ -123,6 +124,7 @@ void setup() {
 
   messageText = MSG_SPLASH;
   messageColor = Color_blue;
+  messageScroll = true;
   messageStart = millis();
   messageUntil = messageStart + DISPLAY_SPLASH_DURING_MS;
   bootBip();
@@ -166,7 +168,7 @@ void loop() {
 void modeClock() {
   if (!bipToneOn) {
     if ((long)(millis() - messageUntil) < 0) {
-      if (textWidth(messageText) > WIDTH) {
+      if (messageScroll) {
         drawScrollingMessage(messageText, messageColor, messageStart);
       } else {
         drawMessage(messageText, messageColor);

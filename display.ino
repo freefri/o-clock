@@ -18,9 +18,14 @@ int textWidth(const char* text) {
 
 void drawScrollingMessage(const char* text, uint32_t color, unsigned long startMs) {
   const int SCROLL_COLUMNS_PER_SECOND = 15;
-  int travel = WIDTH + textWidth(text);
-  int elapsedPx = (millis() - startMs) * SCROLL_COLUMNS_PER_SECOND / 1000;
-  int x = WIDTH - (elapsedPx % travel);
+  const unsigned long SCROLL_INITIAL_HOLD_MS = 400;
+  int width = textWidth(text);
+  int travel = WIDTH + width;
+  unsigned long elapsed = millis() - startMs;
+  elapsed = (elapsed > SCROLL_INITIAL_HOLD_MS) ? (elapsed - SCROLL_INITIAL_HOLD_MS) : 0;
+  int elapsedPx = elapsed * SCROLL_COLUMNS_PER_SECOND / 1000;
+  int x = -(elapsedPx % travel);
+  if (x < -width) x += travel;
 
   display.clear();
   DisplayText(text, x, 0, color);
