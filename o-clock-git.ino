@@ -131,6 +131,9 @@ void setup() {
 }
 
 bool colonOn = true;
+unsigned long lastColonToggle = 0;
+const unsigned long COLON_BLINK_MS = 500;
+const int LOOP_DELAY_MS = 10;
 
 //**********LOOP PROGRAM***************//
 void loop() {
@@ -164,6 +167,8 @@ void loop() {
       }
       break;
   }
+
+  delay(LOOP_DELAY_MS);
 }
 
 void modeClock() {
@@ -175,12 +180,14 @@ void modeClock() {
         drawMessage(messageText, messageColor);
       }
     } else {
-      colonOn = !colonOn;
+      if (millis() - lastColonToggle >= COLON_BLINK_MS) {
+        colonOn = !colonOn;
+        lastColonToggle = millis();
+      }
       drawClock(hh, mm, ss);
     }
   }
   bip();
-  delay(200);
 }
 int prevBip = 0;
 void modeBrightness() {
@@ -195,7 +202,6 @@ void modeBrightness() {
   x += Digit2Display(level % 10, x, 0, Color_orange);
 
   display.show();
-  delay(200);
 }
 void modeBip() {
   display.clear();
@@ -208,7 +214,6 @@ void modeBip() {
   }
 
   display.show();
-  delay(200);
 }
 void modeEdit() {
   display.clear();

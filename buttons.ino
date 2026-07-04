@@ -1,3 +1,5 @@
+const unsigned long DEBOUNCE_MS = 40;
+
 void showVersionMessage(const char* sign) {
   strcpy(messageBuf, sign);
   strcat(messageBuf, MSG_VERSION);
@@ -8,13 +10,22 @@ void showVersionMessage(const char* sign) {
   messageUntil = messageStart + 1000;
 }
 
+bool debouncedButtonPress(byte pin, int &lastState, unsigned long &lastPressAt) {
+  int state = digitalRead(pin);
+  bool edge = (state == LOW && lastState == HIGH);
+  lastState = state;
+  if (edge && (millis() - lastPressAt) > DEBOUNCE_MS) {
+    lastPressAt = millis();
+    return true;
+  }
+  return false;
+}
+
 void handleSelectPlusButton() {
-
   static int lastState = HIGH;
-  int state = digitalRead(PIN_BTN_PLUS);
+  static unsigned long lastPressAt = 0;
+  if (!debouncedButtonPress(PIN_BTN_PLUS, lastState, lastPressAt)) return;
 
-  if (state == LOW && lastState == HIGH) {
-    //Serial.println("UP+ ");
     bootBip(CHANGE_BEEP_HZ);
     if (mode == MODE_BIP) {
       selectbuzz++;
@@ -42,17 +53,13 @@ void handleSelectPlusButton() {
       messageStart = millis();
       messageUntil = messageStart + DISPLAY_SPLASH_DURING_MS;
     }
-  }
-
-  lastState = state;
 }
+
 void handleSelectMinusButton() {
-
   static int lastState = HIGH;
-  int state = digitalRead(PIN_BTN_MINUS);
+  static unsigned long lastPressAt = 0;
+  if (!debouncedButtonPress(PIN_BTN_MINUS, lastState, lastPressAt)) return;
 
-  if (state == LOW && lastState == HIGH) {
-    //Serial.println("DOWN- ");
     bootBip(CHANGE_BEEP_HZ);
     if (mode == MODE_BIP) {
       if (selectbuzz == 0) selectbuzz = 3;
@@ -74,16 +81,13 @@ void handleSelectMinusButton() {
     } else if (mode == MODE_CLOCK) {
       showVersionMessage("- ");
     }
-  }
-
-  lastState = state;
 }
+
 void handleModeButton() {
+    static int lastState = HIGH;
+    static unsigned long lastPressAt = 0;
+    if (!debouncedButtonPress(PIN_BTN_SET, lastState, lastPressAt)) return;
 
-  static int lastState = HIGH;
-  int state = digitalRead(PIN_BTN_SET);
-
-  if (state == LOW && lastState == HIGH) {
     bootBip();
     if (mode == MODE_EDIT && submode_editing > 0) {
       submode_editing++;
@@ -91,16 +95,8 @@ void handleModeButton() {
         submode_editing = 0;
         mode = MODE_CLOCK;
       }
-      //Serial.print("submode -> ");
-      //Serial.println(submode_editing);
     } else {
-      //Serial.println("change mode ");
       mode++;
     }
     if (mode > MODE_LAST) mode = 0;
-    //Serial.print("current mode -> ");
-    //Serial.println(mode);
-  }
-
-  lastState = state;
 }
