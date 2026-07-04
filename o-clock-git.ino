@@ -52,15 +52,16 @@ byte mode = 0;
 const byte MODE_BRIGHTNESS = 1;
 const byte MODE_CLOCK = 0;
 const byte MODE_BIP = 2;
-const byte MODE_EDIT = 3;
-const byte MODE_LAST = 3;
+const byte MODE_INT = 3;
+const byte MODE_EDIT = 4;
+const byte MODE_LAST = 4;
 byte submode_editing = 0;
 const byte EDIT_MODE_HH = 1;
 const byte EDIT_MODE_MM = 2;
 const byte EDIT_MODE_SS = 3;
 // END Mode menu
 
-byte secondsToBip = 15; // period of buzzer in seconds
+byte secondsToBip = 60; // period of buzzer in seconds (15/30/60/120)
 byte selectbuzz = 2; // 0=NO 1=short-high 2=low(default) 3=high
 byte countDownToBip = secondsToBip - 1; // seconds remaining to start
 bool bipToneOn = false;                 // true while the buzzer is sounding (see bip.ino)
@@ -159,6 +160,10 @@ void loop() {
       modeBip();
       break;
 
+    case MODE_INT:
+      modeInt();
+      break;
+
     case MODE_EDIT:
       if (submode_editing == 0) {
         modeEdit();
@@ -212,6 +217,17 @@ void modeBip() {
   } else {
     x += Digit2Display(selectbuzz, x, 0, Color_green);
   }
+
+  display.show();
+}
+void modeInt() {
+  display.clear();
+
+  int x = DisplayText("INT:", 0, 0, Color_white);
+  int v = secondsToBip;
+  if (v >= 100) { x += Digit2Display(v / 100, x, 0, Color_orange); x += 1; }
+  if (v >= 10)  { x += Digit2Display((v / 10) % 10, x, 0, Color_orange); x += 1; }
+  x += Digit2Display(v % 10, x, 0, Color_orange);
 
   display.show();
 }

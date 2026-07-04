@@ -1,5 +1,17 @@
 const unsigned long DEBOUNCE_MS = 40;
 
+const byte BIP_INTERVALS[] = {15, 30, 60, 120};
+const byte BIP_INTERVAL_COUNT = 4;
+
+byte cycleInterval(byte current, int dir) {
+  int idx = 0;
+  for (byte i = 0; i < BIP_INTERVAL_COUNT; i++) {
+    if (BIP_INTERVALS[i] == current) { idx = i; break; }
+  }
+  idx = (idx + dir + BIP_INTERVAL_COUNT) % BIP_INTERVAL_COUNT;
+  return BIP_INTERVALS[idx];
+}
+
 void showVersionMessage(const char* sign) {
   strcpy(messageBuf, sign);
   strcat(messageBuf, MSG_VERSION);
@@ -44,6 +56,8 @@ void handleSelectPlusButton() {
       } else if (submode_editing == EDIT_MODE_SS) {
         editSecond(+1);
       }
+    } else if (mode == MODE_INT) {
+      secondsToBip = cycleInterval(secondsToBip, +1);
     } else if (mode == MODE_CLOCK) {
       strcpy(messageBuf, "+");
       strcat(messageBuf, MSG_SPLASH);   // leading + is drawn orange by the scroller
@@ -78,6 +92,8 @@ void handleSelectMinusButton() {
       } else if (submode_editing == EDIT_MODE_SS) {
         editSecond(-1);
       }
+    } else if (mode == MODE_INT) {
+      secondsToBip = cycleInterval(secondsToBip, -1);
     } else if (mode == MODE_CLOCK) {
       showVersionMessage("- ");
     }
