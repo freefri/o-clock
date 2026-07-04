@@ -9,6 +9,12 @@ void errorBips() {
   }
 }
 
+void bootBip() {
+  tone(PIN_BUZZER, 2000);
+  delay(30);
+  noTone(PIN_BUZZER);
+}
+
 void bip() {
   // Silence the current beep once its duration has elapsed. Non-blocking, so
   // it no longer stalls the loop (the delay()s were what made the beep

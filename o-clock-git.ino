@@ -122,6 +122,7 @@ void setup() {
   messageText = MSG_SPLASH;
   messageColor = Color_blue;
   messageUntil = millis() + 1000;
+  bootBip();
 }
 
 bool colonOn = true;
