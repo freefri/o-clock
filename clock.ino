@@ -2,8 +2,7 @@ void updateClock() {
 
   // Always read the live time from the DS3231 RTC, even while editing, so the
   // clock keeps running on the display. Edits are written straight to the RTC.
-  bool h12;  // 12h format
-  bool pm;   // flag pm
+  bool h12, pm;  // required by getHour(), unused (24h mode)
   hh = rtc.getHour(h12, pm);
   mm = rtc.getMinute();
   ss = rtc.getSecond();

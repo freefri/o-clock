@@ -43,14 +43,14 @@ void drawClock(int hh, int mm, int ss) {
 
   x += ColonBlinking(x, 0, Color_white);
 
-  // MM
+  // minutes
   x += Digit2Display(mm / 10, x, 0, colorMM);
   x += 1;
   x += Digit2Display(mm % 10, x, 0, colorMM);
 
   x += ColonBlinking(x, 0, Color_white);
 
-  // SS
+  // seconds
   x += Digit2Display(ss / 10, x, 0, colorSS);
   x += 1;
   x += Digit2Display(ss % 10, x, 0, colorSS);
@@ -113,7 +113,7 @@ int Colon(int xOffset, int yOffset, uint32_t color) {
 
 int asciiToIndex(byte chr) {
 
-  // numeric digits
+  // accepts either an already-decoded glyph index (0..9) or an ASCII character
   if (chr <= 9) {
     return chr;
   }
@@ -121,7 +121,6 @@ int asciiToIndex(byte chr) {
   if (chr >= '0' && chr <= '9') {
     return chr - '0';
   }
-
   // uppercase
   if (chr >= 'A' && chr <= 'Z') {
     return 10 + (chr - 'A');
@@ -131,8 +130,7 @@ int asciiToIndex(byte chr) {
     return 10 + (chr - 'a');
   }
 
-  // fallback
-  return 255;
+  return 255;  // unknown character
 }
 
 int Digit2Display(byte chr, int xOffset, int yOffset, uint32_t color) {

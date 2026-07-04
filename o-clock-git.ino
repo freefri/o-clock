@@ -4,7 +4,7 @@
 #include "glyphs.h"
 
 //*******Objects of libraries**********//
-DS3231 rtc;  //defines the DS3231 as "rtc"
+DS3231 rtc;
 
 //************ Pin map (per board) ************//
 #if defined(ESP32)
@@ -26,19 +26,19 @@ DS3231 rtc;  //defines the DS3231 as "rtc"
   const byte PIN_BUZZER    = 12;
 #endif
 
-Adafruit_NeoPixel display = Adafruit_NeoPixel(256, PIN_MATRIX, NEO_GRB + NEO_KHZ800);  //sets all the parameters of the display
+Adafruit_NeoPixel display = Adafruit_NeoPixel(256, PIN_MATRIX, NEO_GRB + NEO_KHZ800);
 
 //**********C0NSTANTS***************//
 
-const uint32_t Color_white = display.Color(255, 255, 255);  // hours and minutes color - white
-const uint32_t Color_orange = display.Color(255, 60, 0);    // seconds color - Orange
-const uint32_t Color_red = display.Color(255, 0, 0);        // last seconds color - Red
-const uint32_t Color_green = display.Color(10, 255, 10);    // Seconds 00 color - Green
-const uint32_t Color_blue = display.Color(0, 0, 255); // blue
+const uint32_t Color_white = display.Color(255, 255, 255);
+const uint32_t Color_orange = display.Color(255, 60, 0);
+const uint32_t Color_red = display.Color(255, 0, 0);
+const uint32_t Color_green = display.Color(10, 255, 10);
+const uint32_t Color_blue = display.Color(0, 0, 255);
 
 //*********VARIABLES******************//
-byte hh, mm, ss;                   // hours, minutes, seconds
-byte brightness = 10;              //Maximum brightness of 255
+byte hh, mm, ss;
+byte brightness = 10;
 const int MAX_BRIGHTNESS = 20;
 bool is24hours = false;
 
@@ -77,7 +77,7 @@ void setup() {
   pinMode(PIN_BTN_MINUS, INPUT_PULLUP);
 #if defined(ESP32)
   pinMode(PIN_BTN_GND, OUTPUT);
-  digitalWrite(PIN_BTN_GND, LOW);   // P33 acts as a GND rail for the buttons (tiny current only)
+  digitalWrite(PIN_BTN_GND, LOW);
 #endif
   pinMode(PIN_BUZZER, OUTPUT);
   digitalWrite(PIN_BUZZER, LOW);
@@ -94,9 +94,9 @@ void setup() {
   Serial.print("RTC @0x68: ");
   Serial.println(Wire.endTransmission() == 0 ? "FOUND" : "NOT FOUND - check SDA/SCL/3V3/GND wiring");
 
-  display.begin();                    //Starts the Neopixel display
-  display.show();                     //Initialize all pixels to 'off'
-  display.setBrightness(brightness);  //sets brightness using variable set earlier
+  display.begin();
+  display.show();
+  display.setBrightness(brightness);
 
   rtc.setClockMode(false);  // 24h mode
 
@@ -104,7 +104,6 @@ void setup() {
   countDownToBip = 60 - ss;  // align the long bip to second 0 of the RTC
 }
 
-/*** color blinking */
 bool colonOn = true;
 
 //**********LOOP PROGRAM***************//

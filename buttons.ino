@@ -4,7 +4,6 @@ void handleSelectPlusButton() {
   int state = digitalRead(PIN_BTN_PLUS);
 
   if (state == LOW && lastState == HIGH) {
-
     //Serial.println("UP+ ");
     if (mode == MODE_BIP) {
       selectbuzz++;
@@ -34,7 +33,6 @@ void handleSelectMinusButton() {
   int state = digitalRead(PIN_BTN_MINUS);
 
   if (state == LOW && lastState == HIGH) {
-
     //Serial.println("DOWN- ");
     if (mode == MODE_BIP) {
       if (selectbuzz == 0) selectbuzz = 2;
