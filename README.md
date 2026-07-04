@@ -21,6 +21,7 @@ A DIY clock built to be used as an Orienteering Starts Clock.
 - Time save, although it is not powered (real time clock with separate battery)
 - Different colors for last and start seconds.
 - 2 different sounds (two different frequencies from the same buzzer)
+- Settings persist across power loss — brightness, buzzer mode and interval are saved to the AT24C32 EEPROM on the DS3231 module and restored on power-up
 
 ## Build & flash (command line)
 Board: Arduino UNO, FQBN `arduino:avr:uno`, port `/dev/ttyACM0`.

@@ -100,6 +100,8 @@ void setup() {
 
   rtc.setClockMode(false);  // 24h mode
 
+  loadSettings();
+
   updateClock();
   countDownToBip = 60 - ss;  // align the long bip to second 0 of the RTC
 }
@@ -113,6 +115,7 @@ void loop() {
   handleSelectMinusButton();
 
   updateClock();
+  persistSettings();
   debugSerial();  // bring-up: RTC time + button states over USB (remove later)
 
   switch (mode) {
