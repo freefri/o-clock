@@ -1,5 +1,6 @@
 unsigned long bipToneUntil = 0;  // millis() time at which to silence the buzzer
 const unsigned long SHORT_BEEP_MS = 30;
+const unsigned long SHORT_START_BEEP_MS = 200;
 const unsigned long NORMAL_BEEP_MS = 200;
 const unsigned long LONG_BEEP_MS = 600;
 const int CHANGE_BEEP_HZ = 2100;
@@ -67,7 +68,9 @@ void bip() {
 
   if (countDownToBip == 0) {
     freq = baseFreq;
-    if (!shortBeeps) {
+    if (shortBeeps) {
+      duration = SHORT_START_BEEP_MS;
+    } else {
       freq += START_PITCH_BUMP_HZ;
       duration = LONG_BEEP_MS;
     }
