@@ -24,21 +24,19 @@ A DIY clock built to be used as an Orienteering Starts Clock.
 - Settings persist across power loss — brightness, buzzer mode and interval are saved to the AT24C32 EEPROM on the DS3231 module and restored on power-up
 
 ## Build & flash (command line)
-Board: Arduino UNO, FQBN `arduino:avr:uno`, port `/dev/ttyACM0`.
+Note: Arduino IDE is recommended to build and flash and install libraries and boards.
+
+Use the helper script `buildnFlash.sh`. It finds `arduino-cli` (bundled inside the
+Arduino IDE AppImage, auto-mounting it if needed) and builds + uploads the sketch.
+It defaults to ESP32 on the first `/dev/ttyUSB*`/`/dev/ttyACM*` port; pass a FQBN
+and port to target another board.
 
 ```
-arduino-cli compile --fqbn arduino:avr:uno o-clock-git
-# connect to Arduino UNO
-arduino-cli compile --upload -p /dev/ttyACM0 --fqbn arduino:avr:uno o-clock-git
-# connect to ESP32 (ESP32 Dev Module)
-arduino-cli compile --upload -p /dev/ttyUSB0 --fqbn esp32:esp32:esp32 o-clock-git
-# connect to ESP32-C3 0.42" OLED board (ESP32C3 Dev Module, native USB)
-arduino-cli compile --upload -p /dev/ttyACM0 --fqbn esp32:esp32:esp32c3 o-clock-git
+./buildnFlash.sh                                    # ESP32 (default)
+./buildnFlash.sh arduino:avr:uno /dev/ttyACM0       # Arduino UNO
+./buildnFlash.sh esp32:esp32:esp32c3 /dev/ttyACM0   # ESP32-C3 0.42" OLED
 ```
 
-- `arduino-cli` ships inside the Arduino IDE AppImage. To use it when the IDE is
-  closed, mount the AppImage without launching the GUI:
-  `./arduino-ide_*.AppImage --appimage-mount` (prints a `/tmp/.mount_...` path;
-  `arduino-cli` is under `resources/app/lib/backend/resources/`).
-- If upload fails with **"port /dev/ttyACM0 busy"**, close the Serial Monitor / IDE
-  (it holds the port).
+- If upload fails with **"port ... busy"**, close the Serial Monitor / IDE (it holds the port).
+- The ESP32 port sometimes re-enumerates (`/dev/ttyUSB0` ↔ `/dev/ttyUSB1`) after a
+  replug — pass the correct one as the 2nd argument.
