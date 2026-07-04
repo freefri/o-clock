@@ -133,7 +133,7 @@ void setup() {
 bool colonOn = true;
 unsigned long lastColonToggle = 0;
 const unsigned long COLON_BLINK_MS = 500;
-const int LOOP_DELAY_MS = 10;
+const int LOOP_DELAY_MS = 30;
 
 //**********LOOP PROGRAM***************//
 void loop() {
@@ -220,7 +220,6 @@ void modeEdit() {
 
   int x = DisplayText("EDIT", 0, 0, Color_orange);
   display.show();
-  delay(200);
 }
 
 // Bring-up debug: once per second, print the RTC time and the 3 button states.
