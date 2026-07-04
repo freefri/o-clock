@@ -16,6 +16,7 @@ DS3231 rtc;  //defines the DS3231 as "rtc"
   const byte Buzz  = 13;   // buzzer
   const byte SDA_pin = 23; // DS3231 SDA
   const byte SCL_pin = 22; // DS3231 SCL
+  const byte Pgnd  = 33;   // driven LOW as a GND rail for the buttons
 #else
   // Arduino Uno
   const byte ledPin = 6;   // WS2812 matrix data (add a 3.3V->5V
@@ -37,11 +38,9 @@ const uint32_t Color_green = display.Color(10, 255, 10);    // Seconds 00 color 
 const uint32_t Color_blue = display.Color(0, 0, 255); // blue
 
 //*********VARIABLES******************//
-byte YY, MM, DD, dOW, hh, mm, ss;  // year, month, day, DayOfWeek, hours, minutes, seconds
+byte hh, mm, ss;                   // hours, minutes, seconds
 byte brightness = 10;              //Maximum brightness of 255
 const int MAX_BRIGHTNESS = 20;
-byte aux1, aux2;
-byte cs;  // color of seconds: 0=normal 1=last_seconds 2=start_second
 bool is24hours = false;
 
 // Mode menu
@@ -78,8 +77,8 @@ void setup() {
   pinMode(Pinc, INPUT_PULLUP);
   pinMode(Pdec, INPUT_PULLUP);
 #if defined(ESP32)
-  pinMode(33, OUTPUT);
-  digitalWrite(33, LOW);   // P33 acts as a GND rail for the buttons (tiny current only)
+  pinMode(Pgnd, OUTPUT);
+  digitalWrite(Pgnd, LOW);   // P33 acts as a GND rail for the buttons (tiny current only)
 #endif
   pinMode(Buzz, OUTPUT);
   digitalWrite(Buzz, LOW);
@@ -107,7 +106,6 @@ void setup() {
 }
 
 /*** color blinking */
-unsigned long lastBlink = 0;
 bool colonOn = true;
 
 //**********LOOP PROGRAM***************//

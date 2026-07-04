@@ -2,8 +2,6 @@ void drawClock(int hh, int mm, int ss) {
 
   display.clear();
 
-  const int W = 4; // digit width
-
   if (!is24hours) {
     if (hh > 12) hh -= 12;
   }
@@ -111,25 +109,6 @@ int Colon(int xOffset, int yOffset, uint32_t color) {
   }
 
   return 3;
-}
-void Chars2Display(byte d1, byte d2, byte d3, byte d4, byte d5, byte d6, byte mode, byte cs) {
-
-  display.clear();
-
-  // column positions for digits
-  int xPos[6] = {0, 4, 10, 14, 20, 24};
-  int yPos = 0;
-
-  Digit2Display(d1, xPos[0], yPos, Color_white);
-  Digit2Display(d2, xPos[1], yPos, Color_white);
-
-  Digit2Display(d3, xPos[2], yPos, Color_white);
-  Digit2Display(d4, xPos[3], yPos, Color_white);
-
-  Digit2Display(d5, xPos[4], yPos, Color_white);
-  Digit2Display(d6, xPos[5], yPos, Color_white);
-
-  display.show();
 }
 
 int asciiToIndex(byte chr) {

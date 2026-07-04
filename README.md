@@ -4,9 +4,15 @@ Bipping clock DIY
 The main goal is to be used as Orienteering Starts Clock
 
 ## Summary
-I am doing a DIY project of a clock with the following hardware:
-Arduino UNO, 8×32 WS2812B matrix (256 LEDs), 3 push buttons to change settings, a buzzer to emit interval sounds.
-RTC DS3231 (LIR2032) to keep time while off, arduino nano 328.
+A DIY clock built to be used as an Orienteering Starts Clock.
+
+### Hardware
+- **Microcontroller** — Arduino UNO, Arduino Nano (ATmega328), or ESP32 (the code auto-adapts the pin map per board)
+- **Display** — 8×32 WS2812B LED matrix (256 addressable RGB LEDs)
+- **Timekeeping RTC** — DS3231 real-time clock with a coin-cell backup (LIR2032), keeps time while powered off
+- **Controls** — 3 push buttons (SET / + / −) to navigate menus and set the time
+- **Sound** — passive buzzer for the interval beeps (two frequencies for warning vs. start)
+- **Power** — 5V supply for the matrix and board: a USB outlet, wall adapter, or generic power bank
 
 ## Features
 - Time can be set manually
