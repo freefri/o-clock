@@ -1,3 +1,11 @@
+void showVersionMessage(const char* sign) {
+  strcpy(messageBuf, sign);
+  strcat(messageBuf, MSG_VERSION);
+  messageText = messageBuf;
+  messageColor = Color_orange;
+  messageUntil = millis() + 1000;
+}
+
 void handleSelectPlusButton() {
 
   static int lastState = HIGH;
@@ -22,6 +30,8 @@ void handleSelectPlusButton() {
       } else if (submode_editing == EDIT_MODE_SS) {
         editSecond(+1);
       }
+    } else if (mode == MODE_CLOCK) {
+      showVersionMessage("+ ");
     }
   }
 
@@ -51,6 +61,8 @@ void handleSelectMinusButton() {
       } else if (submode_editing == EDIT_MODE_SS) {
         editSecond(-1);
       }
+    } else if (mode == MODE_CLOCK) {
+      showVersionMessage("- ");
     }
   }
 

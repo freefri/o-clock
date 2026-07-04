@@ -3,6 +3,10 @@
 #include <Wire.h>
 #include "glyphs.h"
 
+//******* Messages **********//
+const char MSG_SPLASH[]  = "RAZA";
+const char MSG_VERSION[] = "V 0.1";
+
 //*******Objects of libraries**********//
 DS3231 rtc;
 
@@ -62,6 +66,11 @@ bool bipToneOn = false;                 // true while the buzzer is sounding (se
 
 byte lastSs = 255;  // last seconds seen by the bip countdown
 
+char messageBuf[12];
+const char* messageText = "";    // brief text shown instead of the clock
+uint32_t messageColor = Color_blue;
+unsigned long messageUntil = 0;  // ...until this millis() time
+
 /*******define matrix dimensions *****/
 #define WIDTH 32
 #define HEIGHT 8
@@ -89,21 +98,30 @@ void setup() {
   Wire.begin();                   // AVR: I2C fixed to A4 (SDA) / A5 (SCL)
 #endif
 
-  // bring-up debug: is the DS3231 answering on the I2C bus?
-  Wire.beginTransmission(0x68);
-  Serial.print("RTC @0x68: ");
-  Serial.println(Wire.endTransmission() == 0 ? "FOUND" : "NOT FOUND - check SDA/SCL/3V3/GND wiring");
-
   display.begin();
   display.show();
   display.setBrightness(brightness);
 
-  rtc.setClockMode(false);  // 24h mode
+  Wire.beginTransmission(0x68);
+  bool rtcOk = (Wire.endTransmission() == 0);
+  Serial.print("RTC @0x68: ");
+  Serial.println(rtcOk ? "FOUND" : "NOT FOUND - check SDA/SCL/3V3/GND wiring");
+
+  if (!rtcOk) {
+    drawMessage("NO RTC", Color_red);
+    errorBips();
+    while (true) delay(1000);  // halt here: keep NO RTC on screen, never start the clock
+  }
+
+  rtc.setClockMode(false);
 
   loadSettings();
-
   updateClock();
   countDownToBip = 60 - ss;  // align the long bip to second 0 of the RTC
+
+  messageText = MSG_SPLASH;
+  messageColor = Color_blue;
+  messageUntil = millis() + 1000;
 }
 
 bool colonOn = true;
@@ -143,8 +161,12 @@ void loop() {
 
 void modeClock() {
   if (!bipToneOn) {
-    colonOn = !colonOn;
-    drawClock(hh, mm, ss);
+    if ((long)(millis() - messageUntil) < 0) {
+      drawMessage(messageText, messageColor);
+    } else {
+      colonOn = !colonOn;
+      drawClock(hh, mm, ss);
+    }
   }
   bip();
   delay(200);

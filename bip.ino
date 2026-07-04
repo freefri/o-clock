@@ -1,5 +1,14 @@
 unsigned long bipToneUntil = 0;  // millis() time at which to silence the buzzer
 
+void errorBips() {
+  for (int i = 0; i < 3; i++) {
+    tone(PIN_BUZZER, 2000);
+    delay(80);
+    noTone(PIN_BUZZER);
+    delay(120);
+  }
+}
+
 void bip() {
   // Silence the current beep once its duration has elapsed. Non-blocking, so
   // it no longer stalls the loop (the delay()s were what made the beep

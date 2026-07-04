@@ -1,3 +1,9 @@
+void drawMessage(const char* text, uint32_t color) {
+  display.clear();
+  DisplayText(text, 0, 0, color);
+  display.show();
+}
+
 void drawClock(int hh, int mm, int ss) {
 
   display.clear();
@@ -129,6 +135,9 @@ int asciiToIndex(byte chr) {
   if (chr >= 'a' && chr <= 'z') {
     return 10 + (chr - 'a');
   }
+  if (chr == '+') return 36;
+  if (chr == '-') return 37;
+  if (chr == '.') return 38;
 
   return 255;  // unknown character
 }
