@@ -1,17 +1,26 @@
 unsigned long bipToneUntil = 0;  // millis() time at which to silence the buzzer
+const unsigned long SHORT_BEEP_MS = 30;
+const unsigned long NORMAL_BEEP_MS = 200;
+const unsigned long LONG_BEEP_MS = 600;
+const int SHORT_BEEP_HZ = 2000;  // ~2 kHz = piezo resonance, where it is loudest
+const int LOW_BEEP_HZ = 400;
+const int HIGH_BEEP_HZ = 800;
+const int START_PITCH_BUMP_HZ = 125;
+const unsigned long ERROR_BEEP_ON_MS = 80;
+const unsigned long ERROR_BEEP_OFF_MS = 120;
 
 void errorBips() {
   for (int i = 0; i < 3; i++) {
-    tone(PIN_BUZZER, 2000);
-    delay(80);
+    tone(PIN_BUZZER, SHORT_BEEP_HZ);
+    delay(ERROR_BEEP_ON_MS);
     noTone(PIN_BUZZER);
-    delay(120);
+    delay(ERROR_BEEP_OFF_MS);
   }
 }
 
 void bootBip() {
-  tone(PIN_BUZZER, 2000);
-  delay(30);
+  tone(PIN_BUZZER, SHORT_BEEP_HZ);
+  delay(SHORT_BEEP_MS);
   noTone(PIN_BUZZER);
 }
 
@@ -35,20 +44,30 @@ void bip() {
     return;
   }
 
-  int tone1 = 400 * selectbuzz;
-  int tone2 = 125;
-  int freq = 0;
-  unsigned long duration = 200;  // short beep
+  int baseFreq;
+  bool shortBeeps;
+  if (selectbuzz == 1) {
+    baseFreq = SHORT_BEEP_HZ;     // identical to the boot beep
+    shortBeeps = true;
+  } else if (selectbuzz == 2) {   // default
+    baseFreq = LOW_BEEP_HZ;
+    shortBeeps = false;
+  } else {                        // selectbuzz == 3
+    baseFreq = HIGH_BEEP_HZ;
+    shortBeeps = false;
+  }
 
-  if (countDownToBip == 1) {
-    freq = tone1;
-  } else if (countDownToBip == 10) {
-    freq = tone1;
-  } else if (countDownToBip == 0) {
-    freq = tone1 + tone2;  // long, higher beep on second 0
-    duration = 600;
-  } else if (countDownToBip <= 5 && countDownToBip > 1) {
-    freq = tone1;
+  int freq = 0;
+  unsigned long duration = shortBeeps ? SHORT_BEEP_MS : NORMAL_BEEP_MS;
+
+  if (countDownToBip == 0) {
+    freq = baseFreq;
+    if (!shortBeeps) {
+      freq += START_PITCH_BUMP_HZ;
+      duration = LONG_BEEP_MS;
+    }
+  } else if (countDownToBip == 1 || countDownToBip == 10 || (countDownToBip >= 2 && countDownToBip <= 5)) {
+    freq = baseFreq;
   }
 
   if (freq > 0) {

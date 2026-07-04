@@ -61,7 +61,7 @@ const byte EDIT_MODE_SS = 3;
 // END Mode menu
 
 byte secondsToBip = 15; // period of buzzer in seconds
-byte selectbuzz = 1; // 0= no buzzer, 1= normal, 2=loud sound
+byte selectbuzz = 2; // 0=NO 1=short-high 2=low(default) 3=high
 byte countDownToBip = secondsToBip - 1; // seconds remaining to start
 bool bipToneOn = false;                 // true while the buzzer is sounding (see bip.ino)
 

@@ -17,7 +17,7 @@ void handleSelectPlusButton() {
     //Serial.println("UP+ ");
     if (mode == MODE_BIP) {
       selectbuzz++;
-      if (selectbuzz > 2) selectbuzz = 0;
+      if (selectbuzz > 3) selectbuzz = 0;
     } else if (mode == MODE_BRIGHTNESS) {
       int next = brightness + 20;
       brightness = (next > MAX_BRIGHTNESS) ? 10 : next;
@@ -51,7 +51,7 @@ void handleSelectMinusButton() {
   if (state == LOW && lastState == HIGH) {
     //Serial.println("DOWN- ");
     if (mode == MODE_BIP) {
-      if (selectbuzz == 0) selectbuzz = 2;
+      if (selectbuzz == 0) selectbuzz = 3;
       else selectbuzz--;
     } else if (mode == MODE_BRIGHTNESS) {
       int prev = brightness - 20;
