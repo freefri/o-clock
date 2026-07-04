@@ -4,7 +4,7 @@
 #include "glyphs.h"
 
 //******* Messages **********//
-const char MSG_SPLASH[]  = "RAZA    PALLEIRA        ";
+const char MSG_SPLASH[]  = "RAZA PALLEIRA  ";
 const int DISPLAY_SPLASH_DURING_MS = 4000;
 const char MSG_VERSION[] = "V 0.1";
 
@@ -67,7 +67,7 @@ bool bipToneOn = false;                 // true while the buzzer is sounding (se
 
 byte lastSs = 255;  // last seconds seen by the bip countdown
 
-char messageBuf[16];
+char messageBuf[32];
 const char* messageText = "";    // brief text shown instead of the clock
 uint32_t messageColor = Color_blue;
 bool messageScroll = false;      // scroll the message instead of showing it static

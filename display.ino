@@ -1,3 +1,5 @@
+const int SPACE_COLUMNS = 4;
+
 void drawMessage(const char* text, uint32_t color) {
   display.clear();
   DisplayText(text, 0, 0, color);
@@ -9,8 +11,8 @@ int textWidth(const char* text) {
   int w = 0;
   while (*text) {
     if (*text == ':') w += 3;
-    else if (asciiToIndex(*text) == 255) w += 1;  // space / unknown
-    else w += 5;                                   // 4px glyph + 1px spacing
+    else if (*text == ' ') w += SPACE_COLUMNS;
+    else w += 5;                                   // glyph (dot for unknown) + spacing
     text++;
   }
   return w > 0 ? w - 1 : 0;
@@ -29,6 +31,9 @@ void drawScrollingMessage(const char* text, uint32_t color, unsigned long startM
 
   display.clear();
   DisplayText(text, x, 0, color);
+  if (text[0] == '+') {
+    Digit2Display('+', x, 0, Color_orange);   // accent a leading + in orange
+  }
   display.show();
 }
 
@@ -175,7 +180,7 @@ int Digit2Display(byte chr, int xOffset, int yOffset, uint32_t color) {
   int glyph = asciiToIndex(chr);
 
   if (glyph == 255) {
-    return 0;
+    glyph = asciiToIndex('.');   // render unknown characters as a dot
   }
 
   const int DIGIT_W = 4;
@@ -207,6 +212,8 @@ int DisplayText(const char* text, int xOffset, int yOffset, uint32_t color) {
 
     if (*text == ':') {
       x += Colon(x - 1, yOffset, color);
+    } else if (*text == ' ') {
+      x += SPACE_COLUMNS;
     } else {
       x += Digit2Display(*text, x, yOffset, color);
       x += 1;   // one column of spacing

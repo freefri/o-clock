@@ -15,6 +15,7 @@ void handleSelectPlusButton() {
 
   if (state == LOW && lastState == HIGH) {
     //Serial.println("UP+ ");
+    bootBip(CHANGE_BEEP_HZ);
     if (mode == MODE_BIP) {
       selectbuzz++;
       if (selectbuzz > 3) selectbuzz = 0;
@@ -33,7 +34,9 @@ void handleSelectPlusButton() {
         editSecond(+1);
       }
     } else if (mode == MODE_CLOCK) {
-      messageText = MSG_SPLASH;
+      strcpy(messageBuf, "+");
+      strcat(messageBuf, MSG_SPLASH);   // leading + is drawn orange by the scroller
+      messageText = messageBuf;
       messageColor = Color_blue;
       messageScroll = true;
       messageStart = millis();
@@ -50,6 +53,7 @@ void handleSelectMinusButton() {
 
   if (state == LOW && lastState == HIGH) {
     //Serial.println("DOWN- ");
+    bootBip(CHANGE_BEEP_HZ);
     if (mode == MODE_BIP) {
       if (selectbuzz == 0) selectbuzz = 3;
       else selectbuzz--;
@@ -80,6 +84,7 @@ void handleModeButton() {
   int state = digitalRead(PIN_BTN_SET);
 
   if (state == LOW && lastState == HIGH) {
+    bootBip();
     if (mode == MODE_EDIT && submode_editing > 0) {
       submode_editing++;
       if (submode_editing > EDIT_MODE_SS) {

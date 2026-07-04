@@ -2,6 +2,7 @@ unsigned long bipToneUntil = 0;  // millis() time at which to silence the buzzer
 const unsigned long SHORT_BEEP_MS = 30;
 const unsigned long NORMAL_BEEP_MS = 200;
 const unsigned long LONG_BEEP_MS = 600;
+const int CHANGE_BEEP_HZ = 2100;
 const int SHORT_BEEP_HZ = 2000;  // ~2 kHz = piezo resonance, where it is loudest
 const int LOW_BEEP_HZ = 400;
 const int HIGH_BEEP_HZ = 800;
@@ -18,10 +19,14 @@ void errorBips() {
   }
 }
 
-void bootBip() {
-  tone(PIN_BUZZER, SHORT_BEEP_HZ);
+void bootBip(int freq) {
+  tone(PIN_BUZZER, freq);
   delay(SHORT_BEEP_MS);
   noTone(PIN_BUZZER);
+}
+
+void bootBip() {
+  bootBip(SHORT_BEEP_HZ);
 }
 
 void silenceFinishedBeep() {
