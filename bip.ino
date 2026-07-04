@@ -5,7 +5,7 @@ void bip() {
   // it no longer stalls the loop (the delay()s were what made the beep
   // intervals uneven). Signed compare tolerates millis() wraparound.
   if (bipToneOn && (long)(millis() - bipToneUntil) >= 0) {
-    noTone(Buzz);
+    noTone(PIN_BUZZER);
     bipToneOn = false;
   }
 
@@ -36,7 +36,7 @@ void bip() {
   }
 
   if (freq > 0) {
-    tone(Buzz, freq);
+    tone(PIN_BUZZER, freq);
     bipToneOn = true;
     bipToneUntil = millis() + dur;
   }

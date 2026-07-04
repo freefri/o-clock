@@ -1,7 +1,7 @@
 void handleSelectPlusButton() {
 
   static int lastState = HIGH;
-  int state = digitalRead(Pinc);
+  int state = digitalRead(PIN_BTN_PLUS);
 
   if (state == LOW && lastState == HIGH) {
 
@@ -31,7 +31,7 @@ void handleSelectPlusButton() {
 void handleSelectMinusButton() {
 
   static int lastState = HIGH;
-  int state = digitalRead(Pdec);
+  int state = digitalRead(PIN_BTN_MINUS);
 
   if (state == LOW && lastState == HIGH) {
 
@@ -61,7 +61,7 @@ void handleSelectMinusButton() {
 void handleModeButton() {
 
   static int lastState = HIGH;
-  int state = digitalRead(Pset);
+  int state = digitalRead(PIN_BTN_SET);
 
   if (state == LOW && lastState == HIGH) {
     if (mode == MODE_EDIT && submode_editing > 0) {

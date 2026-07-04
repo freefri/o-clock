@@ -9,25 +9,24 @@ DS3231 rtc;  //defines the DS3231 as "rtc"
 //************ Pin map (per board) ************//
 #if defined(ESP32)
   // ESP32-WROOM-32 (38-pin DevKit). Avoid flash pins 6-11 and input-only 34-39.
-  const byte ledPin = 19;  // WS2812 matrix data (recommended to add a 3.3V->5V level shifter)
-  const byte Pset  = 27;   // mode/SET button
-  const byte Pinc  = 26;   // + button
-  const byte Pdec  = 25;   // - button
-  const byte Buzz  = 13;   // buzzer
-  const byte SDA_pin = 23; // DS3231 SDA
-  const byte SCL_pin = 22; // DS3231 SCL
-  const byte Pgnd  = 33;   // driven LOW as a GND rail for the buttons
+  const byte PIN_MATRIX    = 19; // Matrix data recommends a 3.3V->5V level shifter
+  const byte PIN_BTN_SET   = 27;
+  const byte PIN_BTN_PLUS  = 26;
+  const byte PIN_BTN_MINUS = 25;
+  const byte PIN_BUZZER    = 13;
+  const byte PIN_SDA       = 23;
+  const byte PIN_SCL       = 22;
+  const byte PIN_BTN_GND   = 33; // driven LOW as a ground rail for the buttons
 #else
-  // Arduino Uno
-  const byte ledPin = 6;   // WS2812 matrix data (add a 3.3V->5V
-  const byte Pset  = 4;    // mode button
-  const byte Pinc  = 2;    // + button
-  const byte Pdec  = 3;    // - button
-  const byte Buzz  = 12;   // buzzer
-  // DS3231 I2C is fixed to A4 (SDA) / A5 (SCL)
+  // Arduino Uno. DS3231 I2C is fixed to A4 (SDA) / A5 (SCL), so no PIN_SDA/PIN_SCL.
+  const byte PIN_MATRIX    = 6;
+  const byte PIN_BTN_SET   = 4;
+  const byte PIN_BTN_PLUS  = 2;
+  const byte PIN_BTN_MINUS = 3;
+  const byte PIN_BUZZER    = 12;
 #endif
 
-Adafruit_NeoPixel display = Adafruit_NeoPixel(256, ledPin, NEO_GRB + NEO_KHZ800);  //sets all the parameters of the display
+Adafruit_NeoPixel display = Adafruit_NeoPixel(256, PIN_MATRIX, NEO_GRB + NEO_KHZ800);  //sets all the parameters of the display
 
 //**********C0NSTANTS***************//
 
@@ -73,19 +72,19 @@ void setup() {
   Serial.println("hello -> setup");
   // Buttons: INPUT_PULLUP works on both AVR and ESP32 (the old INPUT + HIGH
   // trick does not enable the pull-up on ESP32).
-  pinMode(Pset, INPUT_PULLUP);
-  pinMode(Pinc, INPUT_PULLUP);
-  pinMode(Pdec, INPUT_PULLUP);
+  pinMode(PIN_BTN_SET, INPUT_PULLUP);
+  pinMode(PIN_BTN_PLUS, INPUT_PULLUP);
+  pinMode(PIN_BTN_MINUS, INPUT_PULLUP);
 #if defined(ESP32)
-  pinMode(Pgnd, OUTPUT);
-  digitalWrite(Pgnd, LOW);   // P33 acts as a GND rail for the buttons (tiny current only)
+  pinMode(PIN_BTN_GND, OUTPUT);
+  digitalWrite(PIN_BTN_GND, LOW);   // P33 acts as a GND rail for the buttons (tiny current only)
 #endif
-  pinMode(Buzz, OUTPUT);
-  digitalWrite(Buzz, LOW);
+  pinMode(PIN_BUZZER, OUTPUT);
+  digitalWrite(PIN_BUZZER, LOW);
 
   // Start the I2C interface
 #if defined(ESP32)
-  Wire.begin(SDA_pin, SCL_pin);   // ESP32 can route I2C to any GPIO
+  Wire.begin(PIN_SDA, PIN_SCL);   // ESP32 can route I2C to any GPIO
 #else
   Wire.begin();                   // AVR: I2C fixed to A4 (SDA) / A5 (SCL)
 #endif
@@ -184,7 +183,7 @@ void modeEdit() {
 void debugSerial() {
   static byte lastSs = 255;
   static int lastBtns = -1;
-  int b0 = digitalRead(Pset), b1 = digitalRead(Pinc), b2 = digitalRead(Pdec);
+  int b0 = digitalRead(PIN_BTN_SET), b1 = digitalRead(PIN_BTN_PLUS), b2 = digitalRead(PIN_BTN_MINUS);
   int btns = (b0 << 2) | (b1 << 1) | b2;
   // Print on each second tick OR whenever a button changes (catches every press).
   if (ss == lastSs && btns == lastBtns) return;
