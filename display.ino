@@ -4,6 +4,29 @@ void drawMessage(const char* text, uint32_t color) {
   display.show();
 }
 
+// Rendered width in columns, matching DisplayText's per-character advance.
+int textWidth(const char* text) {
+  int w = 0;
+  while (*text) {
+    if (*text == ':') w += 3;
+    else if (asciiToIndex(*text) == 255) w += 1;  // space / unknown
+    else w += 5;                                   // 4px glyph + 1px spacing
+    text++;
+  }
+  return w > 0 ? w - 1 : 0;
+}
+
+void drawScrollingMessage(const char* text, uint32_t color, unsigned long startMs) {
+  const int SCROLL_COLUMNS_PER_SECOND = 15;
+  int travel = WIDTH + textWidth(text);
+  int elapsedPx = (millis() - startMs) * SCROLL_COLUMNS_PER_SECOND / 1000;
+  int x = WIDTH - (elapsedPx % travel);
+
+  display.clear();
+  DisplayText(text, x, 0, color);
+  display.show();
+}
+
 void drawClock(int hh, int mm, int ss) {
 
   display.clear();

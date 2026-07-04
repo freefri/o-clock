@@ -4,7 +4,7 @@
 #include "glyphs.h"
 
 //******* Messages **********//
-const char MSG_SPLASH[]  = "RAZA";
+const char MSG_SPLASH[]  = "RAZA   PALLEIRA     NIGRAN";
 const char MSG_VERSION[] = "V 0.1";
 
 //*******Objects of libraries**********//
@@ -66,10 +66,12 @@ bool bipToneOn = false;                 // true while the buzzer is sounding (se
 
 byte lastSs = 255;  // last seconds seen by the bip countdown
 
-char messageBuf[12];
+char messageBuf[16];
 const char* messageText = "";    // brief text shown instead of the clock
 uint32_t messageColor = Color_blue;
+unsigned long messageStart = 0;  // when the message began (drives the scroll)
 unsigned long messageUntil = 0;  // ...until this millis() time
+const int DISPLAY_SPLASH_DURING_MS = 5000;
 
 /*******define matrix dimensions *****/
 #define WIDTH 32
@@ -119,10 +121,10 @@ void setup() {
   updateClock();
   countDownToBip = 60 - ss;  // align the long bip to second 0 of the RTC
 
-  int displaySplashDuringMs = 5000;
   messageText = MSG_SPLASH;
   messageColor = Color_blue;
-  messageUntil = millis() + displaySplashDuringMs;
+  messageStart = millis();
+  messageUntil = messageStart + DISPLAY_SPLASH_DURING_MS;
   bootBip();
 }
 
@@ -164,7 +166,11 @@ void loop() {
 void modeClock() {
   if (!bipToneOn) {
     if ((long)(millis() - messageUntil) < 0) {
-      drawMessage(messageText, messageColor);
+      if (textWidth(messageText) > WIDTH) {
+        drawScrollingMessage(messageText, messageColor, messageStart);
+      } else {
+        drawMessage(messageText, messageColor);
+      }
     } else {
       colonOn = !colonOn;
       drawClock(hh, mm, ss);
