@@ -42,6 +42,7 @@ byte brightness = 10;              //Maximum brightness of 255
 const int MAX_BRIGHTNESS = 20;
 byte aux1, aux2;
 byte cs;  // color of seconds: 0=normal 1=last_seconds 2=start_second
+bool is24hours = false;
 
 // Mode menu
 byte mode = 0;

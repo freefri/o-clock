@@ -4,6 +4,10 @@ void drawClock(int hh, int mm, int ss) {
 
   const int W = 4; // digit width
 
+  if (!is24hours) {
+    if (hh > 12) hh -= 12;
+  }
+
   int x = (hh >= 10) ? 0 : 4;
 
   uint32_t colorHH;
