@@ -44,7 +44,7 @@ const uint32_t Color_blue = display.Color(0, 160, 255);
 //*********VARIABLES******************//
 byte hh, mm, ss;
 byte brightness = 10;
-const int MAX_BRIGHTNESS = 250;
+const int MAX_BRIGHTNESS = 210;
 bool is24hours = false;
 
 // Mode menu
