@@ -121,7 +121,7 @@ void setup() {
 
   loadSettings();
   updateClock();
-  countDownToBip = 60 - ss;  // align the long bip to second 0 of the RTC
+  alignCountdown(ss);
 
   messageText = MSG_SPLASH;
   messageColor = Color_blue;

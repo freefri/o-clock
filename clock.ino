@@ -18,6 +18,11 @@ void updateClock() {
   }
 }
 
+// Align the next long (start) beep to second 0 of the minute.
+void alignCountdown(byte second) {
+  countDownToBip = 60 - second;
+}
+
 // EDIT mode nudges the RTC directly (delta = +1 or -1), so the clock keeps
 // running on the display while you set it.
 void editHour(int delta) {
@@ -40,6 +45,6 @@ void editSecond(int delta) {
   if (v > 59) v = 0;
   if (v < 0) v = 59;
   rtc.setSecond(v);
-  countDownToBip = 60 - v;  // keep the long bip aligned to second 0
+  alignCountdown(v);
   lastSs = v;
 }

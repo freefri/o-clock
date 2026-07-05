@@ -58,6 +58,7 @@ void handleSelectPlusButton() {
       }
     } else if (mode == MODE_INT) {
       secondsToBip = cycleInterval(secondsToBip, +1);
+      alignCountdown(ss);
     } else if (mode == MODE_CLOCK) {
       strcpy(messageBuf, "+");
       strcat(messageBuf, MSG_SPLASH);   // leading + is drawn orange by the scroller
@@ -94,6 +95,7 @@ void handleSelectMinusButton() {
       }
     } else if (mode == MODE_INT) {
       secondsToBip = cycleInterval(secondsToBip, -1);
+      alignCountdown(ss);
     } else if (mode == MODE_CLOCK) {
       showVersionMessage("- ");
     }
