@@ -13,7 +13,7 @@ A DIY clock built to be used as an Orienteering Starts Clock.
 - **Display** — 8×32 WS2812B LED matrix (256 addressable RGB LEDs)
 - **Timekeeping RTC** — DS3231 real-time clock module with AT24C32 EEPROM and with a coin-cell backup (LIR2032), keeps time while powered off
 - **Controls** — 3 push buttons (SET / + / −) to navigate menus and set the time
-- **Sound** — passive buzzer for the interval beeps (two frequencies for warning vs. start)
+- **Sound** — passive buzzer for the countdown / interval beeps
 - **Power** — 5V supply for the matrix and board: a USB outlet, wall adapter, or generic power bank
 
 ## Features
@@ -22,7 +22,7 @@ A DIY clock built to be used as an Orienteering Starts Clock.
 - Start intervals of 15s, 30s, 60s or 120s (INT menu), aligned to second :00
 - Time save, although it is not powered (real time clock with separate battery)
 - Different colors for last and start seconds.
-- 2 different sounds (two different frequencies from the same buzzer)
+- Selectable buzzer (BIP menu): off, or 3 tone modes (short-high / low / high)
 - Settings persist across power loss — brightness, buzzer mode and interval are saved to the AT24C32 EEPROM on the DS3231 module and restored on power-up
 
 ## Build & flash (command line)
@@ -36,7 +36,6 @@ and port to target another board.
 ```
 ./buildnFlash.sh                                    # ESP32 (default)
 ./buildnFlash.sh arduino:avr:uno /dev/ttyACM0       # Arduino UNO
-./buildnFlash.sh esp32:esp32:esp32c3 /dev/ttyACM0   # ESP32-C3 0.42" OLED
 ```
 
 > ⚠️ **To flash the soldered clock:** Disconnect the external power supply (power bank) before connecting the USB C to the laptop to debug/flash.

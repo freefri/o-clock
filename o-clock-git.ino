@@ -14,7 +14,7 @@ DS3231 rtc;
 //************ Pin map (per board) ************//
 #if defined(ESP32)
   // ESP32-WROOM-32 (38-pin DevKit). Avoid flash pins 6-11 and input-only 34-39.
-  const byte PIN_MATRIX    = 19; // Matrix data recommends a 3.3V->5V level shifter
+  const byte PIN_MATRIX    = 19; // DIN: add 330Ω series (signal) and/or a 3.3V->5V level shifter if 1st pixel flickers
   const byte PIN_BTN_SET   = 27;
   const byte PIN_BTN_PLUS  = 26;
   const byte PIN_BTN_MINUS = 25;
