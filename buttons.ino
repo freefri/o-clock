@@ -3,13 +3,22 @@ const unsigned long DEBOUNCE_MS = 40;
 const byte BIP_INTERVALS[] = {15, 30, 60, 120};
 const byte BIP_INTERVAL_COUNT = 4;
 
-byte cycleInterval(byte current, int dir) {
+byte cycleValue(const byte* table, byte count, byte current, int dir) {
   int idx = 0;
-  for (byte i = 0; i < BIP_INTERVAL_COUNT; i++) {
-    if (BIP_INTERVALS[i] == current) { idx = i; break; }
+  for (byte i = 0; i < count; i++) {
+    if (table[i] == current) { idx = i; break; }
   }
-  idx = (idx + dir + BIP_INTERVAL_COUNT) % BIP_INTERVAL_COUNT;
-  return BIP_INTERVALS[idx];
+  idx = (idx + dir + count) % count;
+  return table[idx];
+}
+
+byte cycleInterval(byte current, int dir) {
+  return cycleValue(BIP_INTERVALS, BIP_INTERVAL_COUNT, current, dir);
+}
+
+byte cycleBrightness(byte current, int dir) {
+  static const byte levels[] = {10, 30, 50, 80, 130, 210};
+  return cycleValue(levels, sizeof(levels), current, dir);
 }
 
 void showVersionMessage(const char* sign) {
@@ -43,8 +52,7 @@ void handleSelectPlusButton() {
       selectbuzz++;
       if (selectbuzz > 3) selectbuzz = 0;
     } else if (mode == MODE_BRIGHTNESS) {
-      int next = brightness + 20;
-      brightness = (next > MAX_BRIGHTNESS) ? 10 : next;
+      brightness = cycleBrightness(brightness, +1);
       display.setBrightness(brightness);
     } else if (mode == MODE_EDIT) {
       if (submode_editing == 0) {
@@ -80,8 +88,7 @@ void handleSelectMinusButton() {
       if (selectbuzz == 0) selectbuzz = 3;
       else selectbuzz--;
     } else if (mode == MODE_BRIGHTNESS) {
-      int prev = brightness - 20;
-      brightness = (prev < 10) ? MAX_BRIGHTNESS : prev;
+      brightness = cycleBrightness(brightness, -1);
       display.setBrightness(brightness);
     } else if (mode == MODE_EDIT) {
       if (submode_editing == 0) {
