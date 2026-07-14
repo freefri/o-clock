@@ -6,7 +6,7 @@
 //******* Messages **********//
 const char MSG_SPLASH[]  = "RAZA PALLEIRA  ";
 const int DISPLAY_SPLASH_DURING_MS = 4000;
-const char MSG_VERSION[] = "V 0.3";
+const char MSG_VERSION[] = "V 1.0";
 
 //*******Objects of libraries**********//
 DS3231 rtc;
