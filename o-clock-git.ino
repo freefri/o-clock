@@ -39,7 +39,7 @@ const uint32_t Color_white = display.Color(255, 255, 255);
 const uint32_t Color_orange = display.Color(255, 60, 0);
 const uint32_t Color_red = display.Color(255, 0, 0);
 const uint32_t Color_green = display.Color(10, 255, 10);
-const uint32_t Color_blue = display.Color(0, 160, 255);
+const uint32_t Color_blue = display.Color(0, 108, 168);
 
 //*********VARIABLES******************//
 byte hh, mm, ss;
@@ -200,11 +200,14 @@ void modeBrightness() {
 
   int x = DisplayText("BRI:", 0, 0, Color_white);
   int level = brightness / 10;
+  uint32_t levelColor = Color_orange;
+  if (brightness == MAX_BRIGHTNESS) levelColor = Color_red;
+  else if (brightness <= 50) levelColor = Color_white;
   if (level >= 10) {
-    x += Digit2Display(level / 10, x, 0, Color_orange);
+    x += Digit2Display(level / 10, x, 0, levelColor);
     x += 1;
   }
-  x += Digit2Display(level % 10, x, 0, Color_orange);
+  x += Digit2Display(level % 10, x, 0, levelColor);
 
   display.show();
 }
