@@ -9,11 +9,11 @@ The main goal is to be used as Orienteering Starts Clock
 A DIY clock built to be used as an Orienteering Starts Clock.
 
 ### Hardware
-- **Microcontroller** — Arduino UNO, Arduino Nano (ATmega328), or ESP32 (the code auto-adapts the pin map per board)
-- **Display** — 8×32 WS2812B LED matrix (256 addressable RGB LEDs)
-- **Timekeeping RTC** — DS3231 real-time clock module with AT24C32 EEPROM and with a coin-cell backup (LIR2032), keeps time while powered off
-- **Controls** — 3 push buttons (SET / + / −) to navigate menus and set the time
-- **Sound** — passive buzzer for the countdown / interval beeps
+- **Microcontroller** — Arduino UNO, Arduino Nano (ATmega328), or [ESP32S](https://es.aliexpress.com/item/1005011840612155.html) (the code auto-adapts the pin map per board)
+- **Display** — 8×32 [WS2812B LED matrix](https://es.aliexpress.com/item/4001296811800.html) (256 addressable RGB LEDs)
+- **[Timekeeping RTC](https://es.aliexpress.com/item/1005007143542894.html)** — DS3231 real-time clock module with AT24C32 EEPROM and with a coin-cell backup (LIR2032), keeps time while powered off
+- **Controls** — [3 push buttons](https://es.aliexpress.com/item/33000051703.html) (SET / + / −) to navigate menus and set the time
+- **Sound** — [passive buzzer](https://es.aliexpress.com/item/1005010509927983.html) for the countdown / interval beeps
 - **Power** — 5V supply for the matrix and board: a USB outlet, wall adapter, or generic power bank
 
 ## Features
